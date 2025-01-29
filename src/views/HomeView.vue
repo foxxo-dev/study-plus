@@ -1,15 +1,13 @@
 <template>
   <main>
-    <button @click="redirectToLogin">Login</button>
+        <router-link to="/login">Login</router-link>
   </main>
 </template>
 
 <script>
 export default {
   methods: {
-    redirectToLogin() {
-      this.$router.push('/login');
-    },
+    
   },
 };
 </script>

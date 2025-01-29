@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
-import { store } from './store'; // Correct the import path if necessary
-import '@/assets/fonts/font.css'
+import { store } from './store';
+import './assets/fonts/font.css';
 
 const app = createApp(App);
 

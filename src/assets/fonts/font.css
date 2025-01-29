@@ -1,14 +1,15 @@
-/* Create a 800 bold font called EquitanSans */
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
 @font-face {
   font-family: 'EquitanSans';
-  src: url('EquitanSans-Bold.ttf') format('ttf');
+  src: url('EquitanSans-Bold.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
 }
-@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
+
 @font-face {
   font-family: 'GlacialIndifference';
-  src: url('GlacialIndifference-Regular.otf') format('otf');
+  src: url('GlacialIndifference-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
 }

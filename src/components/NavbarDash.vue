@@ -2,7 +2,7 @@
   <nav>
     <h3>Study+</h3>
     <div>
-      <button @click="this.$router.push('/')">Log out</button>
+      <router-link to="/login">Log Out</router-link>
     </div>
   </nav>
   <div id="spacer___"></div>

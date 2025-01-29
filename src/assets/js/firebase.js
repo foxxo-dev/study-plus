@@ -52,8 +52,9 @@ export async function signInWithEmail(
   } catch (error) {
     if (error.code === 'auth/user-not-found') {
       try {
+        const _auth = getAuth();
         const newUser = await createUserWithEmailAndPassword(
-          auth,
+          _auth,
           email,
           password,
         );
@@ -73,8 +74,8 @@ export async function signInWithGoogle(successState, errorState) {
 
   try {
     const userCredential = await signInWithPopup(auth, provider);
-    successState(userCredential.user); // ✅ Pass user to successState
+    successState(userCredential.user);
   } catch (error) {
-    errorState(error.message); // Handle any error that might occur during sign-in
+    errorState(error.message);
   }
 }
