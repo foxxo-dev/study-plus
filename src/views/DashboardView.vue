@@ -6,6 +6,7 @@
     <div id="content">
       <div id="projects">
         <div id="project-list">
+          <span class="title">Projects</span>
           <router-link
             class="project"
             v-for="project in projects"
@@ -16,7 +17,9 @@
             </div>
           </router-link>
         </div>
-        <router-link to="/projects/new">New Project</router-link>
+        <router-link to="/projects/new" id="newProject"
+          >New Project</router-link
+        >
       </div>
       <div class="progress">
         <span>{{ currentProject.name }}</span>
@@ -39,6 +42,7 @@
 import { mapGetters } from 'vuex';
 import NavbarDash from '@/components/NavbarDash.vue'; // Import it normally
 import '@/assets/fonts/font.css';
+import backgroundImage from '@/assets/img/book-bg.png';
 
 export default {
   data() {
@@ -54,7 +58,8 @@ export default {
   computed: {
     ...mapGetters(['user']),
     backgroundImage() {
-      return 'https://unsplash.it/1920/1080';
+      return backgroundImage;
+      //   return 'https://unsplash.it/1920/1080';
     },
   },
   components: {
@@ -89,7 +94,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: contrast(0.8);
+  /* filter: contrast(0.8); */
 }
 main {
   width: max(50rem, 80vw);
@@ -98,7 +103,7 @@ main {
 
 h1 {
   font-family: 'EquitanSans', sans-serif;
-  font-size: 3.5rem;
+  font-size: 4rem;
 }
 
 #content {
@@ -128,8 +133,12 @@ h1 {
 #project-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   padding: 1rem;
+}
+
+#project-list .title {
+  font-size: 1.3rem;
 }
 
 #project-list .project {
@@ -139,6 +148,25 @@ h1 {
   align-items: center;
   padding: 0.5rem;
   border-radius: 0.4rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+}
+
+.project.selected {
+  background: rgba(91, 8, 226, 0.3);
+  outline: 3px solid white;
+}
+
+#newProject {
+  width: 100%;
+  height: 3rem;
+  border-top: 2px solid #00000033;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-decoration: none;
 }
 
@@ -151,22 +179,50 @@ h1 {
 }
 .progress span {
   width: 26%;
+  opacity: 0.7;
+  font-size: 1.4rem;
 }
 .progress progress {
+  --color: rgba(91, 8, 226, 0.6); /* the progress color */
+  --background: rgba(255, 255, 255, 0.2); /* the background color */
   width: 100%;
   height: 1.6rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 10em;
+  background: var(--background);
+  backdrop-filter: blur(1rem);
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+}
+.progress progress::-moz-progress-bar {
+  background: var(--color);
+  border-radius: 10em;
+}
+.progress progress::-webkit-progress-bar {
+  border-radius: 10em;
+  background: var(--background);
+}
+.progress progress::-webkit-progress-value {
+  border-radius: 10em;
+  background: var(--color);
 }
 .buttons {
   grid-area: btns;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 1.5rem;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
 hr {
   all: unset;
   width: 100%;
   height: 0.23rem;
-  background: black;
+  background: white;
   opacity: 0.2;
   border-radius: 5rem;
 }
