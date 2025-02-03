@@ -2,7 +2,7 @@
 <html lang="">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
+    <!-- <link rel="icon" href="./src/assets/img/study-plus-logo.png" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Study+ | Learn More, Easier.</title>
 
@@ -13,6 +13,9 @@
         margin: 0;
         padding: 0;
         min-height: 100vh;
+      }
+      body {
+        background: #3f1487;
       }
       #app {
         position: absolute;
@@ -26,10 +29,43 @@
         box-sizing: border-box;
       }
     </style>
-    <script src="https://kit.fontawesome.com/e67c6a9ebf.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/e67c6a9ebf.js"
+      crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
+  <script>
+    // check if it is light mode then make the light mode icon, if it is dark mode make the dark mode icon
+    // check it not using local storage, but what their browser is set to
+    // if it is light mode, make the light mode icon
+    // if it is dark mode, make the dark mode icon
+
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const prefersLightScheme = window.matchMedia(
+      '(prefers-color-scheme: light)',
+    );
+
+    const icon = document.createElement('link');
+    icon.rel = 'icon';
+    document.head.appendChild(icon);
+
+    function updateIcon() {
+      if (prefersDarkScheme.matches) {
+        icon.href = './src/assets/img/study-plus-logo-dark.png';
+      } else if (prefersLightScheme.matches) {
+        icon.href = './src/assets/img/study-plus-logo.png';
+      } else {
+        icon.href = './src/assets/img/study-plus-logo-dark.png';
+      }
+    }
+
+    updateIcon();
+
+    // Listen for changes to the prefers-color-scheme media query
+    prefersDarkScheme.addListener(updateIcon);
+    prefersLightScheme.addListener(updateIcon);
+  </script>
 </html>

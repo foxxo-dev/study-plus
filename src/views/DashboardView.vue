@@ -1,6 +1,6 @@
-<template>
-  <img :src="backgroundImage" alt="background" id="bg" />
-  <NavbarDash />
+<template v-if="user && user.email">
+  <img v-if="backgroundImage" :src="backgroundImage" alt="background" id="bg" />
+  <NavbarDash :photoUrl="user.photoURL ? user.photoURL : null" />
   <main>
     <h1>Welcome, {{ user.displayName || user.email }}!</h1>
     <div id="content">
@@ -11,13 +11,13 @@
             class="project"
             v-for="project in projects"
             :key="project.id"
-            :to="`/projects/${project.id}`">
+            :to="`/dashboard/${project.id}`">
             <div class="projectLink">
               <span>{{ project.name }}</span>
             </div>
           </router-link>
         </div>
-        <router-link to="/projects/new" id="newProject"
+        <router-link to="/dashboard/new" id="newProject"
           >New Project</router-link
         >
       </div>
@@ -40,13 +40,15 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import NavbarDash from '@/components/NavbarDash.vue'; // Import it normally
+import NavbarDash from '@/components/NavbarDash.vue';
 import '@/assets/fonts/font.css';
-import backgroundImage from '@/assets/img/book-bg.png';
+import defaultBackground from '@/assets/img/book-bg.png';
+import { getUsersBackground, getUserPfp } from '@/assets/js/firebase';
 
 export default {
   data() {
     return {
+      backgroundImage: null,
       currentProject: { id: 0, name: 'Science Cells Project' },
       projects: [
         { id: 0, name: 'Science Cells Project' },
@@ -57,15 +59,30 @@ export default {
   },
   computed: {
     ...mapGetters(['user']),
-    backgroundImage() {
-      return backgroundImage;
-      //   return 'https://unsplash.it/1920/1080';
-    },
   },
   components: {
-    NavbarDash, // Register the component normally
+    NavbarDash,
+  },
+  mounted() {
+    this.updateUser();
   },
   methods: {
+    async updateUser() {
+      if (!this.user) return;
+      const userPfp = await getUserPfp(this.user.uid);
+      this.user.photoURL = userPfp || null;
+      console.log('fetched users pfp with the return of', userPfp);
+    },
+    async fetchBackground() {
+      if (!this.user || !this.user.uid) return;
+      try {
+        const url = await getUsersBackground(this.user.uid);
+        this.backgroundImage = url || defaultBackground;
+      } catch (error) {
+        console.error('Error fetching background image:', error);
+        this.backgroundImage = defaultBackground;
+      }
+    },
     checkIfSignedIn() {
       if (!this.user || !this.user.email) {
         this.$router.push('/login');
@@ -73,7 +90,14 @@ export default {
     },
   },
   watch: {
-    user: 'checkIfSignedIn',
+    user: {
+      immediate: true,
+      handler(newUser) {
+        if (newUser && newUser.uid) {
+          this.fetchBackground();
+        }
+      },
+    },
   },
   beforeMount() {
     this.checkIfSignedIn();
@@ -214,9 +238,6 @@ h1 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
-  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
-  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
 hr {
   all: unset;
@@ -236,5 +257,8 @@ hr {
   font-size: 1.5rem;
   text-decoration: none;
   font-family: 'League Spartan', serif;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
 </style>

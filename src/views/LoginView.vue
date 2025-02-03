@@ -70,6 +70,9 @@ export default {
     EyeOpen,
     EyeClosed,
   },
+  beforeMount() {
+    this.user = null;
+  },
   methods: {
     ...mapActions(['loginUser']),
 
@@ -241,6 +244,15 @@ input {
   -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   position: relative;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: #ffffff;
+  transition: background-color 99999999999s ease-in-out 0s;
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.1);
 }
 input::placeholder {
   opacity: 0.6;
