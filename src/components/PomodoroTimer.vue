@@ -107,6 +107,9 @@ export default {
   align-items: center;
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
 
 * {
