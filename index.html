@@ -15,7 +15,7 @@
         min-height: 100vh;
       }
       body {
-        background: #3f1487;
+        background: linear-gradient(180deg, #3f1487 0%, #1e0d3e 100%);
       }
       #app {
         position: absolute;
@@ -27,6 +27,23 @@
       *::before,
       *::after {
         box-sizing: border-box;
+      }
+
+      @media (max-width: 882px) {
+        body::after {
+          content: 'Please use a larger screen to view this website.';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: #000;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
       }
     </style>
     <script

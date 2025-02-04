@@ -1,5 +1,9 @@
 <template>
   <img :src="backgroundImage" alt="background" id="bg" />
+  <div
+    class="background_loading"
+    id="bgl"
+    :style="{ background: averageColor }"></div>
   <nav>
     <router-link to="/dashboard">< Back </router-link>
   </nav>
@@ -58,6 +62,7 @@ import {
   updateUserProfileName,
   changeUserPfP,
   getUsersBackground,
+  getAverageColor,
 } from '@/assets/js/firebase';
 import { mapGetters } from 'vuex';
 
@@ -83,6 +88,11 @@ export default {
   },
   async mounted() {
     if (this.user?.uid) {
+      this.averageColor = await getAverageColor(this.user.uid);
+      document.getElementById('bgl').style.opacity = 1;
+      this.fadeIn();
+      document.getElementById('bgl').style.opacity = 1;
+
       this.backgroundImage =
         (await getUsersBackground(this.user.uid)) || bookBg;
       this.userDisplayName = this.user.displayName;
@@ -102,6 +112,10 @@ export default {
     }
   },
   methods: {
+    fadeIn() {
+      const bg = document.getElementById('bg');
+      bg.style.opacity = 1;
+    },
     selectedCustom() {
       this.isCustom = true;
       this.backgroundImage = this.selectedImageUnChanged;
@@ -253,10 +267,24 @@ h3 {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: -1;
   width: 100%;
   height: 100%;
-  z-index: -1;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s;
+  transition-delay: 0.25s;
+  /* filter: contrast(0.8); */
+}
+.background_loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s;
 }
 nav > a {
   font-family: 'League Spartan', serif;

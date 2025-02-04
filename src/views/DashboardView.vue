@@ -1,5 +1,9 @@
 <template v-if="user && user.email">
-  <img v-if="backgroundImage" :src="backgroundImage" alt="background" id="bg" />
+  <img :src="backgroundImage" alt="background" id="bg" @load="fadeIn" />
+  <div
+    class="background_loading"
+    id="bgl"
+    :style="{ background: averageColor }"></div>
   <NavbarDash :photoUrl="user.photoURL ? user.photoURL : null" />
   <main>
     <h1>Welcome, {{ user.displayName || user.email }}!</h1>
@@ -48,7 +52,11 @@ import { mapGetters } from 'vuex';
 import NavbarDash from '@/components/NavbarDash.vue';
 import '@/assets/fonts/font.css';
 import defaultBackground from '@/assets/img/book-bg.png';
-import { getUsersBackground, getUserPfp } from '@/assets/js/firebase';
+import {
+  getUsersBackground,
+  getUserPfp,
+  getAverageColor,
+} from '@/assets/js/firebase';
 
 export default {
   data() {
@@ -60,6 +68,7 @@ export default {
         { id: 1, name: 'English One Pager Essay' },
         { id: 2, name: 'I&S Source Analyses' },
       ],
+      averageColor: '3f1487',
     };
   },
   computed: {
@@ -74,10 +83,17 @@ export default {
     this.setupProximityCheck();
   },
   methods: {
+    fadeIn() {
+      const bg = document.getElementById('bg');
+      bg.style.opacity = 1;
+    },
     async updateUser() {
       if (!this.user) return;
       const userPfp = await getUserPfp(this.user.uid);
       this.user.photoURL = userPfp || null;
+      this.averageColor = await getAverageColor(this.user.uid);
+      console.log(this.averageColor);
+      document.getElementById('bgl').style.opacity = 1;
       console.log('fetched users pfp with the return of', userPfp);
     },
     async fetchBackground() {
@@ -175,7 +191,20 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s;
+  transition-delay: 0.25s;
   /* filter: contrast(0.8); */
+}
+.background_loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s;
 }
 main {
   width: max(50rem, 80vw);

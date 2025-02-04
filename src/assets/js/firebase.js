@@ -176,9 +176,14 @@ export async function changeUserBackground(uid, backgroundImage) {
   const userDocRef = doc(db, 'userSettings', uid);
   const uri = await getFileURI(backgroundImage); // Compress image
 
-  await setDoc(userDocRef, { background: uri }, { merge: true });
+  // Calculate average background color
+  const averageBackgroundColor = await getAverageColorFromImage(uri);
 
-  // console.log(uri);
+  await setDoc(
+    userDocRef,
+    { background: uri, averageBackgroundColor },
+    { merge: true },
+  );
 
   return uri; // ✅ Return the image URI for immediate use in Vue
 }
@@ -191,9 +196,52 @@ export async function changeUserBackgroundPath(uid, path) {
     return '/src/assets/img/book-bg.png';
   }
 
-  await setDoc(userDocRef, { background: path }, { merge: true });
+  // Calculate average background color
+  const averageBackgroundColor = await getAverageColorFromImage(path);
+
+  await setDoc(
+    userDocRef,
+    { background: path, averageBackgroundColor },
+    { merge: true },
+  );
 
   return userDoc.data().background;
+}
+
+async function getAverageColorFromImage(imageSrc) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = imageSrc;
+    img.crossOrigin = 'Anonymous';
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0, img.width, img.height);
+
+      const imageData = ctx.getImageData(0, 0, img.width, img.height);
+      const data = imageData.data;
+      let r = 0,
+        g = 0,
+        b = 0;
+
+      for (let i = 0; i < data.length; i += 4) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+      }
+
+      r = Math.floor(r / (data.length / 4));
+      g = Math.floor(g / (data.length / 4));
+      b = Math.floor(b / (data.length / 4));
+
+      resolve(`rgb(${r},${g},${b})`);
+    };
+
+    img.onerror = (error) => reject(error);
+  });
 }
 
 export async function updateUserProfileName(displayName) {
@@ -201,6 +249,17 @@ export async function updateUserProfileName(displayName) {
   await updateProfile(auth.currentUser, {
     displayName: displayName,
   });
+}
+
+export async function getAverageColor(uid) {
+  const userDocRef = doc(db, 'userSettings', uid);
+  const userDoc = await getDoc(userDocRef);
+
+  if (!userDoc.exists()) {
+    return '#3f1487';
+  }
+
+  return userDoc.data().averageBackgroundColor;
 }
 
 export async function changeUserPfP(uid, file) {
