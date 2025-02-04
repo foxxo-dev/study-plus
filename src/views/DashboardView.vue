@@ -34,7 +34,11 @@
         <router-link to="/dashboard" class="button">Take a Quiz</router-link>
       </div>
       <hr id="seperator" />
-      <div class="positioner" id="position_pomodoro" ref="positionPomodoro" style="border-radius: 1rem;"></div>
+      <div
+        class="positioner"
+        id="position_pomodoro"
+        ref="positionPomodoro"
+        style="border-radius: 1rem"></div>
     </div>
   </main>
 </template>
@@ -95,14 +99,17 @@ export default {
       const options = {
         root: null,
         rootMargin: '1px',
-        threshold: 0
+        threshold: 0,
       };
-      const observer = new IntersectionObserver(this.handleIntersection, options);
+      const observer = new IntersectionObserver(
+        this.handleIntersection,
+        options,
+      );
       const target = this.$refs.positionPomodoro;
       observer.observe(target);
     },
     handleIntersection(entries) {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.style.outline = '5px solid #ffffffaa';
         } else {
@@ -112,12 +119,12 @@ export default {
     },
     setupProximityCheck() {
       this.checkProximity(); // Initial check
-      window.addEventListener("scroll", this.checkProximity);
-      window.addEventListener("mousemove", this.checkProximity);
+      window.addEventListener('scroll', this.checkProximity);
+      window.addEventListener('mousemove', this.checkProximity);
     },
     checkProximity() {
-      const pomodoro = document.getElementById("pomodoro");
-      const positionPomodoro = document.getElementById("position_pomodoro");
+      const pomodoro = document.getElementById('pomodoro');
+      const positionPomodoro = document.getElementById('position_pomodoro');
 
       if (!pomodoro || !positionPomodoro) return;
 
@@ -126,15 +133,18 @@ export default {
 
       const distance = Math.hypot(
         rect1.left - rect2.left,
-        rect1.top - rect2.top
+        rect1.top - rect2.top,
       );
 
-      if (distance <= 500 && distance >= 1) {
-        positionPomodoro.style.outline = "5px solid #ffffffaa";
+      const distanceX = Math.abs(rect1.left - rect2.left);
+      const distanceY = Math.abs(rect1.top - rect2.top);
+
+      if (distanceX <= 1000 && distance >= 1 && distanceY <= 300) {
+        positionPomodoro.style.outline = '5px solid #ffffffaa';
       } else {
-        positionPomodoro.style.outline = "none";
+        positionPomodoro.style.outline = 'none';
       }
-    }
+    },
   },
   watch: {
     user: {
@@ -151,7 +161,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 @import url('../assets/fonts/font.css');
