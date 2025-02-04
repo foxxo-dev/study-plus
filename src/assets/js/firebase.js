@@ -92,8 +92,8 @@ export async function getUsersBackground(uid) {
   const userDoc = await getDoc(userDocRef);
 
   if (!userDoc.exists()) {
-    await setDoc(userDocRef, { background: 'src/assets/img/book-bg.png' });
-    return 'src/assets/img/book-bg.png';
+    await setDoc(userDocRef, { background: '/src/assets/img/book-bg.png' });
+    return '/src/assets/img/book-bg.png';
   }
 
   return userDoc.data().background;
@@ -188,7 +188,7 @@ export async function changeUserBackgroundPath(uid, path) {
   const userDoc = await getDoc(userDocRef);
 
   if (!userDoc.exists()) {
-    return 'src/assets/img/book-bg.png';
+    return '/src/assets/img/book-bg.png';
   }
 
   await setDoc(userDocRef, { background: path }, { merge: true });

@@ -34,6 +34,7 @@
         <router-link to="/dashboard" class="button">Take a Quiz</router-link>
       </div>
       <hr id="seperator" />
+      <div class="positioner" id="position_pomodoro" ref="positionPomodoro" style="border-radius: 1rem;"></div>
     </div>
   </main>
 </template>
@@ -65,6 +66,8 @@ export default {
   },
   mounted() {
     this.updateUser();
+    this.setupIntersectionObserver();
+    this.setupProximityCheck();
   },
   methods: {
     async updateUser() {
@@ -88,6 +91,50 @@ export default {
         this.$router.push('/login');
       }
     },
+    setupIntersectionObserver() {
+      const options = {
+        root: null,
+        rootMargin: '1px',
+        threshold: 0
+      };
+      const observer = new IntersectionObserver(this.handleIntersection, options);
+      const target = this.$refs.positionPomodoro;
+      observer.observe(target);
+    },
+    handleIntersection(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.outline = '5px solid #ffffffaa';
+        } else {
+          entry.target.style.outline = 'none';
+        }
+      });
+    },
+    setupProximityCheck() {
+      this.checkProximity(); // Initial check
+      window.addEventListener("scroll", this.checkProximity);
+      window.addEventListener("mousemove", this.checkProximity);
+    },
+    checkProximity() {
+      const pomodoro = document.getElementById("pomodoro");
+      const positionPomodoro = document.getElementById("position_pomodoro");
+
+      if (!pomodoro || !positionPomodoro) return;
+
+      const rect1 = pomodoro.getBoundingClientRect();
+      const rect2 = positionPomodoro.getBoundingClientRect();
+
+      const distance = Math.hypot(
+        rect1.left - rect2.left,
+        rect1.top - rect2.top
+      );
+
+      if (distance <= 500 && distance >= 1) {
+        positionPomodoro.style.outline = "5px solid #ffffffaa";
+      } else {
+        positionPomodoro.style.outline = "none";
+      }
+    }
   },
   watch: {
     user: {
@@ -104,6 +151,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 @import url('../assets/fonts/font.css');
@@ -141,6 +189,11 @@ h1 {
     'p pomodoro';
   height: 60vh;
   gap: 2rem;
+}
+
+.positioner {
+  grid-area: pomodoro;
+  anchor-name: --pomodoro-anchor !important;
 }
 
 #projects {

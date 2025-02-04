@@ -17,7 +17,7 @@
       <img
         v-if="updatedBackground"
         :src="backgroundImage"
-        class="smol_preview" />
+        class="small_preview" />
       <span v-else class="arrow">></span>
     </label>
     <div class="image_selector">
@@ -29,12 +29,13 @@
         @click="selectedCustom" />
       <img :src="bookImage" alt="background" id="book" @click="defaultBg" />
       <img :src="sandImage" alt="sand" id="sand" @click="sandBg" />
+      <img :src="macBg" alt="mac" id="mac" @click="setMacBg" />
     </div>
     <h3>Change PfP</h3>
     <input type="file" accept="image/*" id="profile" @change="updatePfp" />
     <label for="profile">
       <span>{{ pfpName }}</span>
-      <img v-if="updatedPfp" :src="userPfp" class="smol_preview" />
+      <img v-if="updatedPfp" :src="userPfp" class="small_preview" />
       <span v-else class="arrow">></span>
     </label>
     <h3>Change Name</h3>
@@ -50,6 +51,7 @@
 import bookBg from '@/assets/img/book-bg.png';
 import sand from '@/assets/img/sand.png';
 import city_bg from '@/assets/img/city-bg.png';
+import macBg from '@/assets/img/mac-os.png';
 import {
   changeUserBackground,
   changeUserBackgroundPath,
@@ -66,6 +68,7 @@ export default {
       selectedImageUnChanged: city_bg,
       sandImage: sand,
       bookImage: bookBg,
+      macBg,
       bgName: 'Background Image',
       pfpName: 'User Image',
       userDisplayName: '',
@@ -135,13 +138,21 @@ export default {
       this.backgroundImage = bookBg;
       await changeUserBackgroundPath(
         this.user.uid,
-        'scr/assets/img/book-bg.png',
+        '/src/assets/img/book-bg.png',
       );
       this.updateSelectedBackground();
     },
     async sandBg() {
       this.backgroundImage = sand;
-      await changeUserBackgroundPath(this.user.uid, '/scr/assets/img/sand.png');
+      await changeUserBackgroundPath(this.user.uid, '/src/assets/img/sand.png');
+      this.updateSelectedBackground();
+    },
+    async setMacBg() {
+      this.backgroundImage = macBg;
+      await changeUserBackgroundPath(
+        this.user.uid,
+        '/src/assets/img/mac-os.png',
+      );
       this.updateSelectedBackground();
     },
     updateSelectedBackground() {
@@ -201,7 +212,7 @@ label > span:not(.arrow) {
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.smol_preview {
+.small_preview {
   width: 1rem;
   height: 1rem;
   aspect-ratio: 1/1;
@@ -223,7 +234,7 @@ img.selected {
   border: 4px solid #bf98eb;
 }
 h1 {
-  font-family: 'EquitanSans', sans-serif;
+  font-family: 'Equitan Sans', sans-serif;
   font-size: 4rem;
   margin-left: 2rem;
   color: white;
