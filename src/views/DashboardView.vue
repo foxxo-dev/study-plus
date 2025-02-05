@@ -35,7 +35,9 @@
           >Check Your Work</router-link
         >
         <router-link to="/dashboard" class="button">Flash Cards</router-link>
-        <router-link to="/dashboard" class="button">Take a Quiz</router-link>
+        <router-link to="/dashboard" class="button premium"
+          >Take a Quiz</router-link
+        >
       </div>
       <hr id="seperator" />
       <div
@@ -205,6 +207,31 @@ export default {
   height: 100%;
   opacity: 0;
   transition: opacity 0.5s;
+}
+.premium {
+  background: #fccb2baa !important;
+  position: relative;
+}
+.premium::after {
+  /* star on top left */
+  content: '★';
+  position: absolute;
+  top: -2rem;
+  left: -1rem;
+  font-size: 3rem;
+  transform: rotate(45deg);
+  color: #fccb2b;
+}
+.premium::before {
+  /* star on top left */
+  content: '★';
+  position: absolute;
+  bottom: -2rem;
+  right: -1rem;
+  font-size: 3rem;
+
+  color: #fccb2b;
+  transform: rotate(-45deg);
 }
 main {
   width: max(50rem, 80vw);

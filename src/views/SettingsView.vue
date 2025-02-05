@@ -99,7 +99,7 @@ export default {
 
       // Check if background is neither book nor sand (custom)
       this.isCustom = !(
-        this.backgroundImage === bookBg || this.backgroundImage === sand
+        this.backgroundImage === bookBg || this.backgroundImage === sand || this.backgroundImage === macBg
       );
 
       // Set the correct selected image
@@ -180,6 +180,8 @@ export default {
         document.getElementById('book').classList.add('selected');
       } else if (this.backgroundImage === sand) {
         document.getElementById('sand').classList.add('selected');
+      } else if (this.backgroundImage === macBg) {
+        document.getElementById('mac').classList.add('selected');
       } else {
         document.getElementById('custom').classList.add('selected');
       }
