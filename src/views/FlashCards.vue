@@ -11,7 +11,7 @@
   <div id="spacer___"></div>
 
   <div class="bottom_commands" @click="generateCards">
-    <button>Regenerate (3)</button>
+    <button>Regenerate ({{ regenerations }})</button>
   </div>
   <div @click="decreaseIndex">
     <i
@@ -56,6 +56,7 @@ import {
   getUsersBackground,
   getUserFlashCards,
   setUserFlashCards,
+  getRegenerations,
 } from '@/assets/js/firebase';
 import { mapGetters } from 'vuex';
 import defaultBackground from '@/assets/img/book-bg.png';
@@ -69,15 +70,18 @@ export default {
       currentCardIndex: 0,
       flashCardData: [],
       generating: false,
+      regenerations: Infinity,
     };
   },
   async mounted() {
     if (this.user?.uid) {
+      this.averageColor = await getAverageColor(this.user.uid);
       this.flashCardData = await getUserFlashCards(this.user.uid);
       if (this.flashCardData == undefined || this.flashCardData == null) {
         this.flashCardData = [];
       }
-      this.averageColor = await getAverageColor(this.user.uid);
+      this.regenerations = await getRegenerations(this.user.uid);
+
       this.backgroundImage = await getUsersBackground(this.user.uid);
       document.getElementById('bgl').style.opacity = 1;
       this.fadeIn();

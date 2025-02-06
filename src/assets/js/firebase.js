@@ -301,3 +301,15 @@ export async function setUserFlashCards(uid, flashcards) {
   const userDocRef = doc(db, 'userSettings', uid);
   await setDoc(userDocRef, { flashcards }, { merge: true });
 }
+
+export async function getRegenerations(uid) {
+  const userDocRef = doc(db, 'userSettings', uid);
+  const userDoc = await getDoc(userDocRef);
+
+  if (userDoc.data().regenerations === undefined) {
+    await setDoc(userDocRef, { regenerations: 3 }, { merge: true });
+    return 3;
+  }
+
+  return userDoc.exists() ? userDoc.data().regenerations : 3;
+}
