@@ -11,7 +11,11 @@
   },
   "dependencies": {
     "@primevue/themes": "^4.2.5",
+    "dot-env": "^0.0.1",
+    "dotenv": "^16.4.7",
+    "env": "^0.0.2",
     "firebase": "^11.2.0",
+    "openai": "^4.82.0",
     "primevue": "^4.2.5",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",

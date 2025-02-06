@@ -28,6 +28,12 @@ const router = createRouter({
       component: () => import('@/views/SettingsView.vue'),
       meta: { showPomodoro: true },
     },
+    {
+      path: '/flash',
+      name: 'flashcards',
+      component: () => import('@/views/FlashCards.vue'),
+      meta: { showPomodoro: true },
+    },
   ],
 });
 

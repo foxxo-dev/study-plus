@@ -287,3 +287,17 @@ export async function getUserPfp(uid) {
 
   return userDoc.exists() ? userDoc.data().photoURL : null;
 }
+
+export async function getUserFlashCards(uid) {
+  const userDocRef = doc(db, 'userSettings', uid);
+  const userDoc = await getDoc(userDocRef);
+
+  console.log(userDoc.data().flashcards);
+
+  return userDoc.exists() ? userDoc.data().flashcards : [];
+}
+
+export async function setUserFlashCards(uid, flashcards) {
+  const userDocRef = doc(db, 'userSettings', uid);
+  await setDoc(userDocRef, { flashcards }, { merge: true });
+}
