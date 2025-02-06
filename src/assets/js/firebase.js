@@ -313,3 +313,9 @@ export async function getRegenerations(uid) {
 
   return userDoc.exists() ? userDoc.data().regenerations : 3;
 }
+
+export async function setRegenerations(uid, regens) {
+  const userDocRef = doc(db, 'userSettings', uid);
+  await setDoc(userDocRef, { regenerations: regens }, { merge: true });
+  return regens;
+}

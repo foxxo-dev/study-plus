@@ -57,10 +57,9 @@ import {
   getUserFlashCards,
   setUserFlashCards,
   getRegenerations,
+  setRegenerations,
 } from '@/assets/js/firebase';
 import { mapGetters } from 'vuex';
-import defaultBackground from '@/assets/img/book-bg.png';
-import { ThemeUtils } from '@primevue/themes';
 export default {
   data() {
     return {
@@ -122,7 +121,13 @@ export default {
     },
     async generateCards() {
       this.flashCardsData = [];
+      if (this.regenerations == 0) {
+        alert('Sorry, you used up ALL of your regenerations!');
+        return;
+      }
       this.generating = true;
+      this.regenerations -= 1;
+      await setRegenerations(this.user.uid, this.regenerations);
       this.flashCardData = [
         {
           q: 'What does OPVL stand for in source analysis?',
