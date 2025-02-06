@@ -10,7 +10,10 @@
   </nav>
   <div id="spacer___"></div>
 
-  <div class="bottom_commands" @click="generateCards">
+  <div
+    class="bottom_commands"
+    :class="regenerations == 0 && 'premium'"
+    @click="generateCards">
     <button>Regenerate ({{ regenerations }})</button>
   </div>
   <div @click="decreaseIndex">
@@ -122,7 +125,9 @@ export default {
     async generateCards() {
       this.flashCardsData = [];
       if (this.regenerations == 0) {
-        alert('Sorry, you used up ALL of your regenerations!');
+        alert(
+          'Sorry, you used up ALL of your regenerations! Upgrade to PREMIUM in order to regenerate more.',
+        );
         return;
       }
       this.generating = true;
@@ -232,6 +237,9 @@ export default {
 </script>
 
 <style scoped>
+.premium {
+  background: #fccb2baa !important;
+}
 nav > a {
   font-family: 'League Spartan', serif;
   font-size: 1.3rem;
