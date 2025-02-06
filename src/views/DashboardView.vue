@@ -30,13 +30,13 @@
         <progress value="72" max="100"></progress>
       </div>
       <div class="buttons">
-        <router-link to="/dashboard" class="button">Gameify!</router-link>
+        <router-link to="/dashboard" class="button">-[Gameify!]-</router-link>
         <router-link to="/dashboard" class="button"
-          >Check Your Work</router-link
+          >-[Check Your Work]-</router-link
         >
         <router-link to="/flash" class="button">Flash Cards</router-link>
         <router-link to="/dashboard" class="button premium"
-          >Take a Quiz</router-link
+          >-[Take a Quiz]-</router-link
         >
       </div>
       <hr id="seperator" />
