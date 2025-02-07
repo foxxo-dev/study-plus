@@ -21,7 +21,42 @@
     </div>
     <h1 class="seperator">LEARN MORE, EASIER</h1>
     <img src="@/assets/img/sand.png" alt="sand" class="sand_bg" />
+    <div class="testimonials_container">
+      <div class="card">
+        <img src="https://unsplash.it/400" alt="person" />
+        <div>
+          <h3>FirstName, S</h3>
+          <p>
+            This is how i got into the microsoft help call centers! The studying
+            was so fun!
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://unsplash.it/200" alt="person" />
+        <div>
+          <h3>FirstName, S</h3>
+          <p>
+            This is how i got into the microsoft help call centers! The studying
+            was so fun!
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <img src="https://unsplash.it/450" alt="person" />
+        <div>
+          <h3>FirstName, S</h3>
+          <p>
+            This is how i got into the microsoft help call centers! The studying
+            was so fun!
+          </p>
+        </div>
+      </div>
+    </div>
+    <h1 class="seperator leaning-right">HOW IT WORKS</h1>
+    <img src="@/assets/img/mac-os.png" alt="sand" class="macosbg" />
   </main>
+  <footer>@foxxo • Adam Buksowicz • Norbert Leoniuk</footer>
 </template>
 
 <script>
@@ -40,6 +75,68 @@ export default {
 </script>
 
 <style scoped>
+footer {
+  height: 8rem;
+  position: absolute;
+  bottom: -280vh;
+  width: 100%;
+  background: #3f1487;
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+.leaning-right {
+  transform: rotate(-2deg) translateY(-2.5rem) !important;
+}
+.testimonials_container {
+  width: 100%;
+  height: calc(100vh - 6rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+  color: white;
+}
+.card {
+  height: 30rem;
+  aspect-ratio: 3/4;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+}
+.card div {
+  width: 90%;
+  margin-bottom: 1rem;
+}
+.card img {
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  margin-top: 2rem;
+}
+.card h3 {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+}
+.card p {
+  line-height: 1.6;
+  opacity: 0.8;
+}
 .seperator {
   height: 10rem;
   background: #4e43bb;
@@ -120,12 +217,21 @@ h1 {
 }
 .sand_bg {
   width: 100vw;
-  height: calc(100vh + 10rem);
+  height: calc(100vh + 20rem);
   object-fit: cover;
   position: absolute;
   top: 100vh;
   left: 0;
   z-index: -2;
+}
+.macosbg {
+  width: 100vw;
+  height: calc(100vh + 20rem);
+  object-fit: cover;
+  position: absolute;
+  top: calc(200vh + 20rem);
+  left: 0;
+  z-index: -3;
 }
 a {
   width: 100vw;

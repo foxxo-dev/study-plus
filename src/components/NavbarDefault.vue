@@ -11,17 +11,8 @@
       <router-link to="/dashboard">Learn More</router-link>
     </div>
     <div>
+      <router-link to="/login">Sign Up</router-link>
       <button>Join Premium</button>
-      <button popovertarget="profile_selector" class="popover_toggle">
-        <img
-          :src="
-            photoUrl == null
-              ? 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg'
-              : photoUrl
-          "
-          alt="profile"
-          id="profile_anchor" />
-      </button>
     </div>
   </nav>
   <div id="spacer___"></div>

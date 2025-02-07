@@ -10,10 +10,10 @@
     @mousedown="startDrag"
     @mouseup="endDrag"
     @mousemove="onDrag">
-    <CircleProgress :value="28.25" valueText="05:39" />
+    <CircleProgress :value="100 - percentage" :valueText="timeRemaining" />
     <div class="button_container">
-      <button class="green">Start</button>
-      <button class="red">Stop</button>
+      <button class="green" @click="startTimer">Start</button>
+      <button class="red" @click="stopTimer">Reset</button>
     </div>
   </div>
 </template>
@@ -28,6 +28,19 @@ export default {
       position: { left: 352.219, top: 672.75 }, // Initial position
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
+      percentage: 0,
+      timeRemaining: '25:00',
+      timer: null,
+      intervals: [
+        { duration: 25 * 60, label: '25:00' },
+        { duration: 5 * 60, label: '05:00' },
+        { duration: 25 * 60, label: '25:00' },
+        { duration: 5 * 60, label: '05:00' },
+        { duration: 25 * 60, label: '25:00' },
+        { duration: 15 * 60, label: '15:00' },
+      ],
+      currentIntervalIndex: 0,
+      currentTime: 0,
     };
   },
   mounted() {
@@ -36,6 +49,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.updateAnchorPosition);
+    this.stopTimer();
   },
   methods: {
     updateAnchorPosition() {
@@ -82,6 +96,48 @@ export default {
         this.position.top >= this.anchor.top &&
         this.position.top <= this.anchor.top + this.anchor.height
       );
+    },
+    startTimer() {
+      if (this.timer) return; // Prevent multiple timers
+      this.currentIntervalIndex = 0;
+      this.currentTime = this.intervals[this.currentIntervalIndex].duration;
+      this.updateTimeDisplay();
+      this.timer = setInterval(this.tick, 1000);
+    },
+    stopTimer() {
+      clearInterval(this.timer);
+      this.timer = null;
+      document.querySelector(
+        'title',
+      ).textContent = `Study+ | Learn more, easier.`;
+    },
+    tick() {
+      if (this.currentTime > 0) {
+        this.currentTime--;
+        this.updateTimeDisplay();
+      } else {
+        this.currentIntervalIndex =
+          (this.currentIntervalIndex + 1) % this.intervals.length;
+        this.currentTime = this.intervals[this.currentIntervalIndex].duration;
+        this.updateTimeDisplay();
+      }
+    },
+    updateTimeDisplay() {
+      const minutes = Math.floor(this.currentTime / 60);
+      const seconds = this.currentTime % 60;
+      this.timeRemaining = `${String(minutes).padStart(2, '0')}:${String(
+        seconds,
+      ).padStart(2, '0')}`;
+      this.percentage =
+        ((this.intervals[this.currentIntervalIndex].duration -
+          this.currentTime) /
+          this.intervals[this.currentIntervalIndex].duration) *
+        100;
+
+      // update the page title
+      document.querySelector(
+        'title',
+      ).textContent = `${this.timeRemaining} | Study+ | Learn more, easier.`;
     },
   },
   components: {

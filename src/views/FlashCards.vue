@@ -12,9 +12,9 @@
 
   <div
     class="bottom_commands"
-    :class="regenerations == 0 && 'premium'"
+    
     @click="generateCards">
-    <button>Regenerate ({{ regenerations }})</button>
+    <button :class="regenerations == 0 && 'premium'">Regenerate ({{ regenerations }})</button>
   </div>
   <div @click="decreaseIndex">
     <i
