@@ -69,13 +69,9 @@ export default {
   data() {
     return {
       backgroundImage: null,
-      currentProject: { id: 0, name: 'Science Cells Project' },
-      projects: [
-        { id: 0, name: 'Science Cells Project' },
-        { id: 1, name: 'English One Pager Essay' },
-        { id: 2, name: 'I&S Source Analyses' },
-      ],
-      averageColor: '3f1487',
+      currentProject: { id: 0, name: 'Loading...' },
+      projects: [{ id: 0, name: 'Loading...' }],
+      averageColor: '#3f1487',
     };
   },
   computed: {
