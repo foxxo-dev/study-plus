@@ -1,8 +1,8 @@
 # study-plus
 
-This is a simple project.
+This is a simple project. More information will be released later.
 
-# WIP---
+# ---WIP---
 
 # Version Control:
 
