@@ -6,13 +6,14 @@
   <p>Give a quick name and description of what you are planning to study.</p>
   <form>
     <div class="input-wrapper">
-      <input type="text" placeholder="Title" id="t" />
+      <input type="text" placeholder="Title" id="t" required />
     </div>
     <div class="input-wrapper">
       <textarea
         type="text"
         placeholder="Description"
         id="t"
+        required
         class="big_text"></textarea>
     </div>
     <span class="smol" :style="{ color: 'black' }"
