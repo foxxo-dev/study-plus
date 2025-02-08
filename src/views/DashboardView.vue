@@ -21,7 +21,7 @@
             </div>
           </router-link>
         </div>
-        <router-link to="/dashboard/new" id="newProject"
+        <router-link to="/dashboard/new/0" id="newProject"
           >New Project</router-link
         >
       </div>
@@ -34,7 +34,11 @@
         <router-link to="/dashboard" class="button"
           >-[Check Your Work]-</router-link
         >
-        <router-link to="/flash" class="button">Flash Cards</router-link>
+        <router-link
+          :to="$route.params.projectId && `/flash/${$route.params.projectId}`"
+          class="button"
+          >Flash Cards</router-link
+        >
         <router-link to="/dashboard" class="button premium"
           >-[Take a Quiz]-</router-link
         >
@@ -47,6 +51,7 @@
         style="border-radius: 1rem"></div>
     </div>
   </main>
+  <!-- <div id="debug">current project: {{ $route.params.projectId }}</div> -->
 </template>
 
 <script>
@@ -80,10 +85,15 @@ export default {
     NavbarDash,
   },
   mounted() {
+    if (!this.$route.params.projectId) {
+      // navigate to the new project page
+      this.$router.push('/dashboard/new/0');
+    }
     this.updateUser();
     this.setupIntersectionObserver();
     this.setupProximityCheck();
   },
+
   methods: {
     fadeIn() {
       const bg = document.getElementById('bg');

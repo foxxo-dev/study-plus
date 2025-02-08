@@ -18,18 +18,29 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
+      name: 'dashboard_redirect',
+      redirect: '/dashboard/0',
+    },
+    {
+      path: '/dashboard/:projectId',
       name: 'dashboard',
       component: () => import('@/views/DashboardView.vue'),
       meta: { showPomodoro: true },
     },
     {
-      path: '/settings',
+      path: '/dashboard/new/:step',
+      name: 'new-project',
+      component: () => import('@/views/newView.vue'),
+      meta: { showPomodoro: true },
+    },
+    {
+      path: '/settings/:projectId',
       name: 'settings',
       component: () => import('@/views/SettingsView.vue'),
       meta: { showPomodoro: true },
     },
     {
-      path: '/flash',
+      path: '/flash/:projectId',
       name: 'flashcards',
       component: () => import('@/views/FlashCards.vue'),
       meta: { showPomodoro: true },

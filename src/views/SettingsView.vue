@@ -5,7 +5,10 @@
     id="bgl"
     :style="{ background: averageColor }"></div>
   <nav>
-    <router-link to="/dashboard">< Back </router-link>
+    <router-link
+      :to="$route.params.projectId && `/dashboard/${$route.params.projectId}`"
+      >< Back
+    </router-link>
   </nav>
   <div id="spacer___"></div>
   <h1>Settings</h1>
@@ -99,7 +102,9 @@ export default {
 
       // Check if background is neither book nor sand (custom)
       this.isCustom = !(
-        this.backgroundImage === bookBg || this.backgroundImage === sand || this.backgroundImage === macBg
+        this.backgroundImage === bookBg ||
+        this.backgroundImage === sand ||
+        this.backgroundImage === macBg
       );
 
       // Set the correct selected image

@@ -6,7 +6,10 @@
     :style="{ background: averageColor }"></div>
 
   <nav>
-    <router-link to="/dashboard">< Back </router-link>
+    <router-link
+      :to="$route.params.projectId && `/dashboard/${$route.params.projectId}`"
+      >< Back
+    </router-link>
   </nav>
   <div id="spacer___"></div>
 
@@ -134,9 +137,9 @@ export default {
       await setRegenerations(this.user.uid, this.regenerations);
       const flash = await getChatGPTFlashcards(
         'work document',
-        'Learning about science cells and stuff',
-        'I have a summative with MYP and want to score at least a 6',
-        'this is in the MYP system, my minimum grade is a 6.',
+        'learning about physics',
+        'quantum physics',
+        'quantum physics',
       );
       this.flashCardData = flash?.flashcards || [];
       this.generating = false;

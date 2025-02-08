@@ -78,7 +78,7 @@ export default {
 
     async succesedLogin(user) {
       this.loginUser(user); // Store user in Vuex
-      this.$router.push('/dashboard');
+      this.$router.push('/dashboard/0');
     },
 
     togglePassword() {

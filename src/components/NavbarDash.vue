@@ -17,7 +17,7 @@
   </nav>
 
   <div id="profile_selector" popover anchor="profile_anchor" class="dropdown">
-    <router-link to="/settings">Settings</router-link>
+    <router-link :to="$route.params.projectId && `/settings/${$route.params.projectId}`">Settings</router-link>
     <router-link to="/">Log Out</router-link>
   </div>
 
