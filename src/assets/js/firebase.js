@@ -309,11 +309,11 @@ export async function getRegenerations(uid) {
   const userDoc = await getDoc(userDocRef);
 
   if (userDoc.data().regenerations === undefined) {
-    await setDoc(userDocRef, { regenerations: 3 }, { merge: true });
-    return 3;
+    await setDoc(userDocRef, { regenerations: 4 }, { merge: true });
+    return 4;
   }
 
-  return userDoc.exists() ? userDoc.data().regenerations : 3;
+  return userDoc.exists() ? userDoc.data().regenerations : 4;
 }
 
 export async function setRegenerations(uid, regens) {
