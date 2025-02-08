@@ -69,6 +69,8 @@ export async function signInWithEmail(
       }
     } else if (error.code === 'auth/wrong-password') {
       errorState('Invalid password');
+    } else if (error.code === 'auth/email-already-in-use') {
+      errorState('User already exists on different provider');
     } else {
       errorState(error.message);
     }
