@@ -1,7 +1,7 @@
 <template>
   <div id="background_color"></div>
   <NavbarDefault />
-  <main>
+  <main v-if="!loading">
     <img src="@/assets/img/moutains.png" alt="mountains" class="bg" />
     <div class="landing">
       <h1 class="right">
@@ -56,6 +56,9 @@
     <h1 class="seperator leaning-right">HOW IT WORKS</h1>
     <img src="@/assets/img/mac-os.png" alt="sand" class="macosbg" />
   </main>
+  <div v-else class="loading-screen">
+    <p>Loading...</p>
+  </div>
   <footer>@foxxo • Adam Buksowicz • Norbert Leoniuk</footer>
 </template>
 
@@ -63,6 +66,11 @@
 import NavbarDefault from '@/components/NavbarDefault.vue';
 
 export default {
+  data() {
+    return {
+      loading: true,
+    };
+  },
   methods: {
     navigateToLogin() {
       this.$router.push('/login');
@@ -70,6 +78,12 @@ export default {
   },
   components: {
     NavbarDefault,
+  },
+  mounted() {
+    // Simulate loading
+    setTimeout(() => {
+      this.loading = false;
+    }, 1234);
   },
 };
 </script>
@@ -241,6 +255,16 @@ a {
   text-decoration: none;
   display: grid;
   place-items: center;
+  font-size: 2rem;
+}
+.loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: #3f1487;
+  color: white;
   font-size: 2rem;
 }
 </style>
