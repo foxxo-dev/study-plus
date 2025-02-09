@@ -13,6 +13,9 @@
           <span class="title">Projects</span>
           <router-link
             class="project"
+            :class="
+              $route.params.projectId === project.id.toString() && 'selected'
+            "
             v-for="project in projects"
             :key="project.id"
             :to="`/dashboard/${project.id}`">
@@ -105,20 +108,7 @@ export default {
       this.currentProject = this.projects.find(
         (project) => project.id === this.$route.params.projectId,
       );
-      if (this.currentProject) {
-        this.$nextTick(() => {
-          const projectLinks = document.querySelectorAll('.project');
-          projectLinks.forEach((link) => {
-            if (
-              link.getAttribute('key') === this.currentProject.id.toString()
-            ) {
-              link.classList.add('selected');
-            } else {
-              link.classList.remove('selected');
-            }
-          });
-        });
-      }
+
       if (this.projects.length <= 0) {
         this.$router.push('/dashboard/new/0');
       }
@@ -329,11 +319,22 @@ h1 {
   -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  text-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.project span {
+  display: block;
+  width: 8rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .project.selected {
-  background: rgba(91, 8, 226, 0.3);
-  outline: 3px solid white;
+  background: rgba(91, 8, 226, 0.3) !important;
+  outline: 1px solid white;
 }
 
 #newProject {
@@ -354,7 +355,7 @@ h1 {
   align-items: center;
 }
 .progress span {
-  width: 26%;
+  width: 100%;
   opacity: 0.7;
   font-size: 1.4rem;
 }
@@ -362,6 +363,7 @@ h1 {
   --color: rgba(91, 8, 226, 0.6); /* the progress color */
   --background: rgba(255, 255, 255, 0.2); /* the background color */
   width: 100%;
+  flex-grow: 1;
   height: 1.6rem;
   -webkit-appearance: none;
   -moz-appearance: none;

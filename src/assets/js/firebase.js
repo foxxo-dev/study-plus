@@ -291,8 +291,8 @@ export async function getUserPfp(uid) {
   return userDoc.exists() ? userDoc.data().photoURL : null;
 }
 
-export async function getUserFlashCards(uid) {
-  const userDocRef = doc(db, 'userSettings', uid);
+export async function getUserFlashCards(uid, projectId) {
+  const userDocRef = doc(db, 'userSettings', uid, 'projects', projectId);
   const userDoc = await getDoc(userDocRef);
 
   console.log(userDoc.data().flashcards);
@@ -300,8 +300,8 @@ export async function getUserFlashCards(uid) {
   return userDoc.exists() ? userDoc.data().flashcards : [];
 }
 
-export async function setUserFlashCards(uid, flashcards) {
-  const userDocRef = doc(db, 'userSettings', uid);
+export async function setUserFlashCards(uid, projectId, flashcards) {
+  const userDocRef = doc(db, 'userSettings', uid, 'projects', projectId);
   await setDoc(userDocRef, { flashcards }, { merge: true });
 }
 

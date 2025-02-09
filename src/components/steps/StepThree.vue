@@ -78,7 +78,7 @@ export default {
       console.log(projectObj);
       await createProject(this.user.uid, projectObj);
       console.log('Created Project Successfully');
-      this.$router.push('/dashboard/' + (project_num + 1));
+      this.$router.push('/dashboard/' + (project_num));
     },
   },
 };

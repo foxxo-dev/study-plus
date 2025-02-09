@@ -62,17 +62,19 @@ export default {
       reader.readAsArrayBuffer(pdf);
       return new Promise((resolve, reject) => {
         reader.onload = async () => {
-          try {
+            try {
             const typedarray = new Uint8Array(reader.result);
             const pdfjsLib = await import('pdfjs-dist/build/pdf');
             const pdfjsWorker = window.location.origin + '/pdf.worker.min.mjs';
             pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-            const pdf = await pdfjsLib.getDocument({ data: typedarray })
-              .promise;
-            const page = await pdf.getPage(1);
-            const textContent = await page.getTextContent();
-            const text = textContent.items.map((i) => i.str).join(' ');
-            resolve(text);
+            const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+            let text = '';
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+              const page = await pdf.getPage(pageNum);
+              const textContent = await page.getTextContent();
+              text += textContent.items.map((i) => i.str).join(' ') + '-----';
+            }
+            resolve(text.trim());
           } catch (error) {
             reject(error);
           }

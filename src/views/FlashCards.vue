@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <p id="debug">Current Card Index: {{ currentCardIndex }}</p>
+  <!-- <p id="debug">Current Card Index: {{ currentCardIndex }}</p> -->
 </template>
 
 <script>
@@ -70,6 +70,7 @@ import {
   setUserFlashCards,
   getRegenerations,
   setRegenerations,
+  getProject,
 } from '@/assets/js/firebase';
 import { getChatGPTFlashcards } from '@/assets/js/openai';
 import { mapGetters } from 'vuex';
@@ -89,7 +90,11 @@ export default {
   async mounted() {
     if (this.user?.uid) {
       this.averageColor = await getAverageColor(this.user.uid);
-      this.flashCardData = (await getUserFlashCards(this.user.uid)) || [];
+      this.flashCardData =
+        (await getUserFlashCards(
+          this.user.uid,
+          this.$route.params.projectId,
+        )) || [];
       this.regenerations = await getRegenerations(this.user.uid);
       this.backgroundImage = await getUsersBackground(this.user.uid);
       document.getElementById('bgl').style.opacity = 1;
@@ -125,6 +130,13 @@ export default {
       else if (event.key === 'ArrowLeft') this.decreaseIndex();
     },
     async generateCards() {
+      if (this.generating) {
+        alert(
+          'What do you want me to do? It aint me taking up the time, its Openai. Blame them, ' +
+            this.user.displayName,
+        );
+        return;
+      }
       if (this.regenerations === 0) {
         alert(
           'Sorry, you used up ALL of your regenerations! Upgrade to PREMIUM in order to regenerate more.',
@@ -135,15 +147,29 @@ export default {
       this.generating = true;
       this.regenerations--;
       await setRegenerations(this.user.uid, this.regenerations);
+      const project = await getProject(
+        this.user.uid,
+        this.$route.params.projectId,
+      );
+      console.log(project);
       const flash = await getChatGPTFlashcards(
-        'work document',
-        'learning about physics',
-        'quantum physics',
-        'quantum physics',
+        project.fileData || 'No Data',
+        project.documentType || 'unkown',
+        project.title || 'Untitled',
+        project.description || '',
+        `Have this mood: ${
+          project.AI_Theme || 'Be a helpful AI assistant'
+        }, and this is what the user wrote: ${
+          project.extraPrompt || '(no extra prompt)'
+        }`,
       );
       this.flashCardData = flash?.flashcards || [];
       this.generating = false;
-      await setUserFlashCards(this.user.uid, this.flashCardData);
+      await setUserFlashCards(
+        this.user.uid,
+        this.$route.params.projectId,
+        this.flashCardData,
+      );
     },
   },
   computed: {
