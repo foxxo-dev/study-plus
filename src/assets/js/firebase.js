@@ -14,7 +14,7 @@ import {
   doc,
   getDoc,
   setDoc,
-  getDocs
+  getDocs,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -293,6 +293,7 @@ export async function getUserPfp(uid) {
 
 export async function getUserFlashCards(uid, projectId) {
   const userDocRef = doc(db, 'userSettings', uid, 'projects', projectId);
+  if (!userDocRef) return [];
   const userDoc = await getDoc(userDocRef);
 
   console.log(userDoc.data().flashcards);
