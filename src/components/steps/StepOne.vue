@@ -2,15 +2,15 @@
   <div class="icon_container">
     <i class="fa-solid fa-signature"></i>
   </div>
-  <h1>Start With a name</h1>
+  <h1>Start With a Name</h1>
   <p>Give a quick name and description of what you are planning to study.</p>
-  <form>
+  <form @submit.prevent="submit">
     <div class="input-wrapper">
-      <input type="text" placeholder="Title" id="t" required />
+      <input v-model="name" type="text" placeholder="Title" id="t" required />
     </div>
     <div class="input-wrapper">
       <textarea
-        type="text"
+        v-model="description"
         placeholder="Description"
         id="t"
         required
@@ -19,11 +19,27 @@
     <span class="smol" :style="{ color: 'black' }"
       >You can always change this name later.</span
     >
-    <button @click.prevent="this.$router.push('/dashboard/new/1')">
-      Continue
-    </button>
+    <button type="submit">Continue</button>
   </form>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      name: '',
+      description: '',
+    };
+  },
+  methods: {
+    submit() {
+      this.$emit('updateStepOne', this.name, this.description);
+      this.$router.push('/dashboard/new/1');
+    },
+  },
+};
+</script>
+
 <style scoped>
 textarea {
   resize: none;

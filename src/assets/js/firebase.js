@@ -14,6 +14,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  getDocs
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -320,4 +321,26 @@ export async function setRegenerations(uid, regens) {
   const userDocRef = doc(db, 'userSettings', uid);
   await setDoc(userDocRef, { regenerations: regens }, { merge: true });
   return regens;
+}
+
+export async function getProject(uid, projectId) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return projectDoc.exists() ? projectDoc.data() : null;
+}
+
+export async function getProjectsList(uid) {
+  const projectsCollectionRef = collection(db, 'projects', uid, 'userProjects');
+  const projectsCollection = await getDocs(projectsCollectionRef); // Use getDocs() instead of `.get()`
+
+  // If no project list exists, return an empty array
+  if (projectsCollection.empty) return [];
+
+  return projectsCollection.docs.map((doc) => doc.data());
+}
+
+export async function createProject(uid, project) {
+  const projectsCollectionRef = collection(db, 'projects', uid, 'userProjects');
+  await setDoc(doc(projectsCollectionRef, project.id), project);
 }

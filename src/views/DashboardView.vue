@@ -63,6 +63,7 @@ import {
   getUsersBackground,
   getUserPfp,
   getAverageColor,
+  getProjectsList,
 } from '@/assets/js/firebase';
 
 export default {
@@ -100,6 +101,27 @@ export default {
       const userPfp = await getUserPfp(this.user.uid);
       this.user.photoURL = userPfp || null;
       this.averageColor = await getAverageColor(this.user.uid);
+      this.projects = await getProjectsList(this.user.uid);
+      this.currentProject = this.projects.find(
+        (project) => project.id === this.$route.params.projectId,
+      );
+      if (this.currentProject) {
+        this.$nextTick(() => {
+          const projectLinks = document.querySelectorAll('.project');
+          projectLinks.forEach((link) => {
+            if (
+              link.getAttribute('key') === this.currentProject.id.toString()
+            ) {
+              link.classList.add('selected');
+            } else {
+              link.classList.remove('selected');
+            }
+          });
+        });
+      }
+      if (this.projects.length <= 0) {
+        this.$router.push('/dashboard/new/0');
+      }
       console.log(this.averageColor);
       document.getElementById('bgl').style.opacity = 1;
       console.log('fetched users pfp with the return of', userPfp);
@@ -177,6 +199,11 @@ export default {
         if (newUser && newUser.uid) {
           this.fetchBackground();
         }
+      },
+    },
+    $route: {
+      handler() {
+        this.updateUser();
       },
     },
   },
@@ -283,6 +310,7 @@ h1 {
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  width: 12rem;
 }
 
 #project-list .title {

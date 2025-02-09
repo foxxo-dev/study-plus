@@ -6,27 +6,83 @@
   <p>Tell us how you want the AI to act.</p>
   <form>
     <div class="input-wrapper">
-      <input type="text" placeholder="What Mood do you want?" id="t" />
+      <input
+        type="text"
+        placeholder="What Mood do you want?"
+        id="t"
+        v-model="aiTheme" />
     </div>
     <div class="input-wrapper">
       <textarea
         type="text"
         placeholder="Extra Information about your project."
         id="t"
+        v-model="extraPrompt"
         class="big_text"></textarea>
     </div>
-    <button
-      @click.prevent="this.$router.push('/dashboard/0')"
-      style="margin-bottom: 0">
+    <button @click.prevent="_createProject" style="margin-bottom: 0">
       Continue
     </button>
-    <button
-      @click.prevent="this.$router.push('/dashboard/0')"
-      class="unPrimary">
-      Skip
-    </button>
+    <button @click.prevent="_createProject" class="unPrimary">Skip</button>
   </form>
 </template>
+<script>
+import { createProject, getProjectsList } from '@/assets/js/firebase';
+import { mapGetters } from 'vuex';
+
+export default {
+  data() {
+    return {
+      aiTheme: '',
+      extraPrompt: '',
+    };
+  },
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    fileData: {
+      type: Object,
+      required: true,
+    },
+    fileType: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    ...mapGetters(['user']),
+  },
+  mounted() {
+    console.log(this.name, this.description, this.fileData, this.fileType);
+  },
+  methods: {
+    async _createProject() {
+      const project_list = await getProjectsList(this.user.uid);
+      let project_num = project_list.length;
+      const projectObj = {
+        name: this.name || 'Untitled',
+        description: this.description || 'No Description',
+        fileData: this.fileData || 'No File Provided',
+        fileType: this.fileType || 'No File Type',
+        AI_Theme: this.aiTheme || 'act normally, but informational',
+        extraPrompt:
+          this.extraPrompt || 'the user provided no extra information.',
+        id: String(project_num++),
+      };
+      console.log(projectObj);
+      await createProject(this.user.uid, projectObj);
+      console.log('Created Project Successfully');
+      this.$router.push('/dashboard/' + (project_num + 1));
+    },
+  },
+};
+</script>
 <style scoped>
 .unPrimary {
   background: rgba(255, 255, 255, 0.1);

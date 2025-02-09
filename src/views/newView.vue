@@ -16,9 +16,14 @@
         @click="redirectToStep(2)"></span>
     </div>
 
-    <StepOne v-if="$route.params.step == 0" />
-    <StepTwo v-if="$route.params.step == 1" />
-    <StepThree v-if="$route.params.step == 2" />
+    <StepOne v-if="$route.params.step == 0" @updateStepOne="updateOne" />
+    <StepTwo v-if="$route.params.step == 1" @updateStepTwo="updateTwo" />
+    <StepThree
+      v-if="$route.params.step == 2"
+      :name="name"
+      :description="description"
+      :file-data="file"
+      :file-type="fileType" />
   </main>
   <span>Debug: {{ $route.params.step }}</span>
 </template>
@@ -28,11 +33,27 @@ import StepOne from '@/components/steps/StepOne.vue';
 import StepThree from '@/components/steps/StepThree.vue';
 import StepTwo from '@/components/steps/StepTwo.vue';
 
+
 export default {
   data() {
-    return {};
+    return {
+      name: '',
+      description: '',
+      file: '',
+      fileType: '',
+    };
   },
   methods: {
+    updateOne(name, description) {
+      this.name = name;
+      this.description = description;
+      console.log('Updated One', name, description);
+    },
+    updateTwo(file, fileType) {
+      this.file = file;
+      this.fileType = fileType;
+      console.log('Updated Two', file, fileType);
+    },
     redirectToStep(step) {
       this.$router.push(`/dashboard/new/${step}`);
     },

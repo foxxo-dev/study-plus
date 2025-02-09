@@ -7,34 +7,110 @@
     For now, upload one document. Later you can upload more. This will help us
     understand your project.
   </p>
-  <form>
+  <form @submit.prevent="submit">
     <div class="input-wrapper">
-      <input type="file" accept="image/*" id="profile" />
+      <input
+        type="file"
+        accept="application/pdf"
+        id="profile"
+        ref="fileInput"
+        @change="handleFileUpload" />
       <label for="profile" class="forFile">
-        <span>Upload Document</span>
+        <span>{{ fileName || 'Upload Document' }}</span>
         <span class="arrow">></span>
       </label>
     </div>
     <div class="radio_container">
-      <input type="radio" id="notes" name="doc_type" value="notes" checked />
+      <input
+        type="radio"
+        id="notes"
+        name="doc_type"
+        value="notes"
+        v-model="fileType" />
       <label for="notes">Notes and flashcards.</label>
     </div>
     <div class="radio_container">
-      <input type="radio" id="working" name="doc_type" value="working" />
-      <label for="working">Working document (eg. Essay, worksheet)</label>
+      <input
+        type="radio"
+        id="working"
+        name="doc_type"
+        value="working"
+        v-model="fileType" />
+      <label for="working">Working document (e.g., Essay, worksheet)</label>
     </div>
-    <button
-      @click.prevent="this.$router.push('/dashboard/new/2')"
-      style="margin-bottom: 0">
-      Continue
-    </button>
-    <button
-      @click.prevent="this.$router.push('/dashboard/new/2')"
-      class="unPrimary">
+    <button type="submit" style="margin-bottom: 0">Continue</button>
+    <button @click.prevent="$emit('skipStepTwo')" class="unPrimary">
       Skip
     </button>
   </form>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      fileData: {},
+      fileType: 'notes',
+      fileName: '',
+    };
+  },
+  methods: {
+    async gettext(e) {
+      const pdf = e.target.files[0];
+      // read the text from the pdf
+      const reader = new FileReader();
+      reader.readAsArrayBuffer(pdf);
+      return new Promise((resolve, reject) => {
+        reader.onload = async () => {
+          try {
+            const typedarray = new Uint8Array(reader.result);
+            const pdfjsLib = await import('pdfjs-dist/build/pdf');
+            const pdfjsWorker = window.location.origin + '/pdf.worker.min.mjs';
+            pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+            const pdf = await pdfjsLib.getDocument({ data: typedarray })
+              .promise;
+            const page = await pdf.getPage(1);
+            const textContent = await page.getTextContent();
+            const text = textContent.items.map((i) => i.str).join(' ');
+            resolve(text);
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+      });
+    },
+
+    checkFileSize(event) {
+      const file = event.target.files[0];
+      if (file.size > 5000000) {
+        alert('File is too big! Max 5MB');
+        return true;
+      }
+      return false;
+    },
+
+    handleFileUpload(event) {
+      if (this.checkFileSize(event)) return;
+
+      const file = event.target.files[0];
+      this.fileName = file.name; // Set fileName before processing
+
+      // Get the text from the PDF
+      this.gettext(event).then((text) => {
+        this.fileData = text; // Set fileData once text is ready
+        console.log(text); // Now the text should be available
+      });
+    },
+
+    submit() {
+      this.$emit('updateStepTwo', this.fileData, this.fileType);
+      this.$router.push('/dashboard/new/2');
+    },
+  },
+};
+</script>
+
 <style scoped>
 input[type='radio'] {
   width: 1.5rem;
