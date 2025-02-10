@@ -45,6 +45,18 @@ const router = createRouter({
       component: () => import('@/views/FlashCards.vue'),
       meta: { showPomodoro: true },
     },
+    {
+      path: 'auth/emailverified',
+      name: 'emailverified',
+      component: () => import('@/views/auth/VerifiedEmail.vue'),
+      meta: { showPomodoro: false },
+    },
+    {
+      path: 'auth/verifyingemail',
+      name: 'verifyingemail',
+      component: () => import('@/views/auth/Verifying.vue'),
+      meta: { showPomodoro: false },
+    },
   ],
 });
 

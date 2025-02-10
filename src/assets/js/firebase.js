@@ -7,6 +7,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   updateProfile,
+  sendEmailVerification,
+  applyActionCode,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -34,6 +36,26 @@ const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
 
+export async function verifyEmail(mode, actionCode, lang) {
+  if (mode !== 'verifyEmail') {
+    throw new Error('Invalid mode');
+    return false;
+  }
+
+  const auth = getAuth(app);
+
+  applyActionCode(auth, actionCode)
+    .then((resp) => {
+      console.log('Email verified:', resp);
+
+      return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}
+
 export async function signInWithEmail(
   email,
   password,
@@ -53,7 +75,13 @@ export async function signInWithEmail(
       email,
       password,
     );
-    successState(userCredential.user);
+    if (userCredential.user.emailVerified) {
+      successState(userCredential.user);
+    } else {
+      sendEmailVerification(auth.currentUser).then(() => {
+        errorState('Email not verified. Verify Via the Verification Email');
+      });
+    }
   } catch (error) {
     console.error('Sign-in error:', error.code, error.message);
 
@@ -64,7 +92,9 @@ export async function signInWithEmail(
           email,
           password,
         );
-        successState(newUser.user);
+        sendEmailVerification(auth.currentUser).then(() => {
+          errorState('Email not verified. Verify Via the Verification Email');
+        });
       } catch (createError) {
         errorState(createError.message);
       }
