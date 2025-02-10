@@ -82,7 +82,7 @@ export default {
       averageColor: '#000000',
       cardFlipped: false,
       currentCardIndex: 0,
-      flashCardData: [{}],
+      flashCardData: [],
       generating: false,
       regenerations: 4,
     };
