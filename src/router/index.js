@@ -46,19 +46,19 @@ const router = createRouter({
       meta: { showPomodoro: true },
     },
     {
-      path: 'auth/emailverified',
+      path: '/auth/emailverified',
       name: 'emailverified',
       component: () => import('@/views/auth/VerifiedEmail.vue'),
       meta: { showPomodoro: false },
     },
     {
-      path: 'auth/verifyingemail',
+      path: '/auth/verifyingemail',
       name: 'verifyingemail',
       component: () => import('@/views/auth/Verifying.vue'),
       meta: { showPomodoro: false },
     },
     {
-      path: 'auth/verificationRedirect',
+      path: '/auth/verificationRedirect',
       name: 'verificationRedirect',
       component: () => import('@/views/auth/VerificationRedirect.vue'),
       meta: { showPomodoro: false },
