@@ -294,6 +294,9 @@ h1 {
   background: #ffffff33;
   backdrop-filter: blur(1rem);
   border-radius: 1rem;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
 #project-list {
   display: flex;
