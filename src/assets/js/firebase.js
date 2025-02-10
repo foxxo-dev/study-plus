@@ -36,6 +36,19 @@ const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
 
+export async function updatePercentage(uid, projectId, percentage) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  console.log(percentage);
+  await setDoc(projectDocRef, { percentage }, { merge: true });
+}
+
+export async function getPercentage(uid, projectId) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return projectDoc.exists() ? projectDoc.data().percentage : 0;
+}
+
 export async function verifyEmail(mode, actionCode, lang) {
   if (mode !== 'verifyEmail') {
     throw new Error('Invalid mode');

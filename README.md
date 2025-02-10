@@ -6,6 +6,11 @@ This is a simple project. More information will be released later.
 
 # Version Control:
 
+# A0.2.1
+
+- Added Ding sound effect on timer completion
+- Added Progress tracking for Projects (Flashcards Only)
+
 # A0.2.0
 
 - Added Three step Project Creation

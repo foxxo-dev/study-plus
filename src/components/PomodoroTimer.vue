@@ -1,4 +1,7 @@
 <template>
+  <audio>
+    <source src="@/assets/audio/ding.mp3" type="audio/mpeg" />
+  </audio>
   <div
     ref="pomodoro"
     class="container"
@@ -120,6 +123,8 @@ export default {
           (this.currentIntervalIndex + 1) % this.intervals.length;
         this.currentTime = this.intervals[this.currentIntervalIndex].duration;
         this.updateTimeDisplay();
+        // play ding
+        this.$el.querySelector('audio').play();
       }
     },
     updateTimeDisplay() {

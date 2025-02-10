@@ -30,7 +30,7 @@
       </div>
       <div class="progress">
         <span>{{ currentProject.name }}</span>
-        <progress value="72" max="100"></progress>
+        <progress :value="progress" max="100"></progress>
       </div>
       <div class="buttons">
         <router-link to="/dashboard" class="button">-[Gameify!]-</router-link>
@@ -67,6 +67,7 @@ import {
   getUserPfp,
   getAverageColor,
   getProjectsList,
+  getPercentage,
 } from '@/assets/js/firebase';
 
 export default {
@@ -76,6 +77,7 @@ export default {
       currentProject: { id: 0, name: 'Loading...' },
       projects: [{ id: 0, name: 'Loading...' }],
       averageColor: '#3f1487',
+      progress: 0,
     };
   },
   computed: {
@@ -109,12 +111,20 @@ export default {
         (project) => project.id === this.$route.params.projectId,
       );
 
+      this.progress = 0;
+
       if (this.projects.length <= 0) {
         this.$router.push('/dashboard/new/0');
       }
       console.log(this.averageColor);
       document.getElementById('bgl').style.opacity = 1;
-      console.log('fetched users pfp with the return of', userPfp);
+      // console.log('fetched users pfp with the return of', userPfp);
+
+      this.progress = await getPercentage(
+        this.user.uid,
+        this.currentProject.id,
+      );
+      console.log('percentage:', this.percentage);
     },
     async fetchBackground() {
       if (!this.user || !this.user.uid) return;
@@ -377,6 +387,7 @@ h1 {
   -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  transition: 300ms;
 }
 .progress progress::-moz-progress-bar {
   background: var(--color);

@@ -71,6 +71,8 @@ import {
   getRegenerations,
   setRegenerations,
   getProject,
+  getPercentage,
+  updatePercentage,
 } from '@/assets/js/firebase';
 import { getChatGPTFlashcards } from '@/assets/js/openai';
 import { mapGetters } from 'vuex';
@@ -85,6 +87,7 @@ export default {
       flashCardData: [],
       generating: false,
       regenerations: 4,
+      percentageViewed: 0,
     };
   },
   async mounted() {
@@ -118,6 +121,14 @@ export default {
         this.currentCardIndex++;
         this.cardFlipped = false;
       }
+      this.percentageViewed = Math.round(
+        (this.currentCardIndex / this.flashCardData.length) * 25,
+      );
+
+      console.log(this.percentageViewed);
+      this._updatePercentage().then(() => {
+        console.log('Updated Percentage');
+      });
     },
     flipCard() {
       this.cardFlipped = !this.cardFlipped;
@@ -128,6 +139,36 @@ export default {
     handleKeydown(event) {
       if (event.key === 'ArrowRight') this.increaseIndex();
       else if (event.key === 'ArrowLeft') this.decreaseIndex();
+    },
+    async _updatePercentage() {
+      const percentage = this.percentageViewed + 2;
+
+      const previousPercentage = await getPercentage(
+      this.user.uid,
+      this.$route.params.projectId,
+      );
+
+      console.log(this.percentageViewed + 2);
+
+      console.log(previousPercentage);
+
+      if (isNaN(previousPercentage)) {
+      await updatePercentage(
+        this.user.uid,
+        this.$route.params.projectId,
+        this.percentageViewed + 2,
+      );
+      return;
+      }
+
+      if (previousPercentage >= this.percentageViewed) {
+      return;
+      }
+      await updatePercentage(
+      this.user.uid,
+      this.$route.params.projectId,
+      this.percentageViewed + 2,
+      );
     },
     async generateCards() {
       if (this.generating) {
@@ -165,6 +206,10 @@ export default {
       );
       this.flashCardData = flash?.flashcards || [];
       this.generating = false;
+      this.percentageViewed = 0;
+
+      await this._updatePercentage();
+
       await setUserFlashCards(
         this.user.uid,
         this.$route.params.projectId,
