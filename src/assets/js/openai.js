@@ -1,7 +1,10 @@
 import OpenAI from 'openai';
 
-const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const openaiOrg = import.meta.env.VITE_OPENAI_ORGANIZATION;
+// const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
+// const openaiOrg = import.meta.env.VITE_OPENAI_ORGANIZATION;
+
+const openaiKey = "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"
+const openaiOrg = "org-ogtaCMZuh6Yw90m6eRNmFTR1"
 
 if (!openaiKey) {
   throw new Error(
