@@ -57,6 +57,12 @@ const router = createRouter({
       component: () => import('@/views/auth/Verifying.vue'),
       meta: { showPomodoro: false },
     },
+    {
+      path: 'auth/verificationRedirect',
+      name: 'verificationRedirect',
+      component: () => import('@/views/auth/VerificationRedirect.vue'),
+      meta: { showPomodoro: false },
+    },
   ],
 });
 
