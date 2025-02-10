@@ -13,7 +13,7 @@
   </nav>
   <div id="spacer___"></div>
 
-  <div class="bottom_commands" @click="generateCards">
+  <div class="bottom_commands" @click="generateCards" v-if="regenerations != 4">
     <button :class="{ premium: regenerations === 0 }">
       Regenerate ({{ regenerations }})
     </button>
@@ -82,7 +82,7 @@ export default {
       averageColor: '#000000',
       cardFlipped: false,
       currentCardIndex: 0,
-      flashCardData: [],
+      flashCardData: [{}],
       generating: false,
       regenerations: 4,
     };
