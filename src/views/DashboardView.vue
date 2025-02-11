@@ -377,6 +377,7 @@ h1 {
   --background: rgba(255, 255, 255, 0.2); /* the background color */
   width: 100%;
   flex-grow: 1;
+  overflow: hidden;
   height: 1.6rem;
   -webkit-appearance: none;
   -moz-appearance: none;
