@@ -47,7 +47,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-image: linear-gradient(to bottom, #00000081, #0000);
+  background-image: linear-gradient(to bottom, #00000081 0%, #00000012 60%, #0000 100%);
   color: white;
   width: 100%;
   position: fixed;

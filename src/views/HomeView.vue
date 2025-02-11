@@ -55,6 +55,44 @@
     </div>
     <h1 class="seperator leaning-right">HOW IT WORKS</h1>
     <img src="@/assets/img/mac-os.png" alt="sand" class="macosbg" />
+    <div class="horiz_container">
+      <div class="horizontal">
+        <span class="big_horiz">1</span>
+        <p>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
+          consequatur optio aut id aliquam adipisci sequi doloremque, autem
+          itaque error nisi est natus deleniti rem, facere quos quaerat
+          explicabo nobis! Lorem, ipsum dolor sit amet consectetur adipisicing
+          elit. Eos consequuntur eveniet vitae numquam facilis, accusantium
+          quis, officia similique eum, incidunt quidem et minima voluptatem
+          corrupti architecto accusamus assumenda aut velit.
+        </p>
+      </div>
+      <div class="horizontal">
+        <span class="big_horiz">2</span>
+        <p>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
+          consequatur optio aut id aliquam adipisci sequi doloremque, autem
+          itaque error nisi est natus deleniti rem, facere quos quaerat
+          explicabo nobis! Lorem, ipsum dolor sit amet consectetur adipisicing
+          elit. Eos consequuntur eveniet vitae numquam facilis, accusantium
+          quis, officia similique eum, incidunt quidem et minima voluptatem
+          corrupti architecto accusamus assumenda aut velit.
+        </p>
+      </div>
+      <div class="horizontal">
+        <span class="big_horiz" style="margin-top: -1.5rem">3</span>
+        <p>
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit
+          consequatur optio aut id aliquam adipisci sequi doloremque, autem
+          itaque error nisi est natus deleniti rem, facere quos quaerat
+          explicabo nobis! Lorem, ipsum dolor sit amet consectetur adipisicing
+          elit. Eos consequuntur eveniet vitae numquam facilis, accusantium
+          quis, officia similique eum, incidunt quidem et minima voluptatem
+          corrupti architecto accusamus assumenda aut velit.
+        </p>
+      </div>
+    </div>
   </main>
   <div v-else class="loading-screen">
     <p>Loading...</p>
@@ -89,10 +127,41 @@ export default {
 </script>
 
 <style scoped>
+.horiz_container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 80vw;
+  margin: auto;
+  margin-top: 20vh;
+}
+.horizontal {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  border-radius: 1rem;
+  align-items: center;
+  padding: 1rem;
+}
+.horizontal p {
+  max-width: 100% !important;
+  font-size: 1.2rem;
+}
+
+.horizontal span {
+  font-size: 8rem;
+  font-family: 'EquitanSans', sans-serif;
+}
+
 footer {
   height: 8rem;
   position: absolute;
-  bottom: -280vh;
+  top: -350vh;
   width: 100%;
   background: #3f1487;
   z-index: 10000;
@@ -101,6 +170,7 @@ footer {
   align-items: center;
   font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.6);
+  z-index: 99999;
 }
 .leaning-right {
   transform: rotate(-2deg) translateY(-2.5rem) !important;

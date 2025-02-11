@@ -17,7 +17,10 @@
   </nav>
 
   <div id="profile_selector" popover anchor="profile_anchor" class="dropdown">
-    <router-link :to="$route.params.projectId && `/settings/${$route.params.projectId}`">Settings</router-link>
+    <router-link
+      :to="$route.params.projectId && `/settings/${$route.params.projectId}`"
+      >Settings</router-link
+    >
     <router-link to="/">Log Out</router-link>
   </div>
 
@@ -49,7 +52,13 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-image: linear-gradient(to bottom, #00000081, #0000);
+  background-image: linear-gradient(
+    to bottom,
+    #00000081 0%,
+    #00000012 60%,
+    #0000 100%
+  );
+
   color: white;
   width: 100%;
   position: fixed;
