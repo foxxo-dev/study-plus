@@ -35,7 +35,7 @@ export default {
 
     const lang = this.getParameterByName('lang') || 'en';
 
-    const verified = await verifyEmail(mode, ActionCodeOperation, lang);
+    const verified = await verifyEmail(mode, actionCode, lang);
 
     if (verified) {
       this.$router.push('/auth/emailverified');
