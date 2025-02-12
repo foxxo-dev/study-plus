@@ -63,6 +63,12 @@ const router = createRouter({
       component: () => import('@/views/auth/VerificationRedirect.vue'),
       meta: { showPomodoro: false },
     },
+    {
+      path: '/Tetris',
+      name: 'Tetris',
+      component: () => import('@/views/Tetris.vue'),
+      meta: { nimo: 'cool' },
+    },
   ],
 });
 

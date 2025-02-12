@@ -22,7 +22,7 @@ export default {
 
     const actionCode = this.getParameterByName('oobCode');
 
-    const lang = getParameterByName('lang') || 'en';
+    const lang = this.getParameterByName('lang') || 'en';
 
     switch (mode) {
       case 'resetPassword':
