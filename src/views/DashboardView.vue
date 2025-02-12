@@ -55,6 +55,10 @@
     </div>
   </main>
   <!-- <div id="debug">current project: {{ $route.params.projectId }}</div> -->
+  <div id="janwodospad" v-if="janWodospad">
+    Get the fuck out you agar agar packet (no this will not dissapear only on
+    this page tho) mr agara agar
+  </div>
 </template>
 
 <script>
@@ -78,6 +82,7 @@ export default {
       projects: [{ id: 0, name: 'Loading...' }],
       averageColor: '#3f1487',
       progress: 0,
+      janWodospad: false,
     };
   },
   computed: {
@@ -124,6 +129,11 @@ export default {
         this.user.uid,
         this.currentProject.id,
       );
+      console.log(this.user.displayName);
+      if (this.user.displayName == 'Jan Wodospad') {
+        this.janWodospad = true;
+      }
+
       console.log('percentage:', this.percentage);
     },
     async fetchBackground() {
@@ -217,6 +227,22 @@ export default {
 @import url('../assets/fonts/font.css');
 * {
   color: white;
+}
+#janwodospad {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #00000049;
+  display: grid;
+  color: white;
+  place-items: center;
+  font-size: 3rem;
+  z-index: 9999;
+  padding-inline: 2rem;
+  text-align: center;
+  pointer-events: none;
 }
 #bg {
   position: fixed;
