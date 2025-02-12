@@ -1,13 +1,38 @@
 <template>
-
+  <div id="playArea">
+    <template v-for="(row, rowIndex) in playArea" :key="rowIndex">
+      <div class="row" >
+        <template v-for="(cell, cellIndex) in row" :key="cellIndex">
+          <div class="cell" :class="{ active: cell === 1 }"></div>
+        </template>
+      </div>
+    </template>
+  </div>
 </template>
 <script>
 
 export default {
   data() {
     return {
-      backgroundImage: bookBg, // I
+      backgroundImage: bookBg,
+
+      playAreaWidth: 10,
+      playAreaHeight: 20,
+      playArea: [],
     };
+  },
+  mounted() {
+    this.initPlayArea();
+  },
+  methods: {
+    initPlayArea() {
+      for (let i = 0; i < this.playAreaHeight; i++) {
+        this.playArea.push([]);
+        for (let j = 0; j < this.playAreaWidth; j++) {
+          this.playArea[i].push(0);
+        }
+      }
+    },
   },
 }
 </script>

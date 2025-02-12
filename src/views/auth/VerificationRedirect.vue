@@ -32,7 +32,7 @@ export default {
         break;
       case 'verifyEmail':
         this.$router.push(
-          `/auth/verifying?oobCode=${actionCode}&mode=${mode}&lang=${lang}`,
+          `/auth/verifyingemail?oobCode=${actionCode}&mode=${mode}&lang=${lang}`,
         );
         break;
       default:
