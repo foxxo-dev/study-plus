@@ -32,7 +32,7 @@ export default {
 
     const actionCode = this.getParameterByName('oobCode');
 
-    const lang = getParameterByName('lang') || 'en';
+    const lang = this.getParameterByName('lang') || 'en';
 
     const verified = await verifyEmail(mode, ActionCodeOperation, lang);
 
