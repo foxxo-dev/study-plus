@@ -1,11 +1,9 @@
 <template>
   <div id="playArea">
     <template v-for="(row, rowIndex) in playArea" :key="rowIndex">
-      <div class="row" >
         <template v-for="(cell, cellIndex) in row" :key="cellIndex">
           <div class="cell" :class="{ active: cell === 1 }"></div>
         </template>
-      </div>
     </template>
   </div>
 </template>
