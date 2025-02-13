@@ -97,7 +97,10 @@
   <div v-else class="loading-screen">
     <p>Loading...</p>
   </div>
-  <footer>@foxxo • Adam Buksowicz • Norbert Leoniuk</footer>
+  <footer>
+    <a href="https://www.foxxo.app">@foxxo • Adam Buksowicz </a> • Norbert
+    Leoniuk
+  </footer>
 </template>
 
 <script>
@@ -127,6 +130,26 @@ export default {
 </script>
 
 <style scoped>
+footer a {
+  all: unset;
+  text-decoration: none;
+  margin-right: 0.5pc;
+  position: relative;
+}
+footer a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -0.5rem;
+  background-color: white;
+  display: block;
+  transition: width 0.3s;
+  opacity: 0.6;
+}
+footer a:hover::after {
+  width: 100%;
+}
 .horiz_container {
   display: flex;
   flex-direction: column;
@@ -159,9 +182,8 @@ export default {
 }
 
 footer {
-  height: 8rem;
-  position: absolute;
-  top: -350vh;
+  margin-top: 10rem;
+  height: 13rem;
   width: 100%;
   background: #3f1487;
   z-index: 10000;
