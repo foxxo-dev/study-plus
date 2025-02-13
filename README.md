@@ -6,6 +6,11 @@ This is a simple project. More information will be released later.
 
 # Version Control:
 
+# A0.2.2
+
+- Added Improve Page
+- To be Continued (bug's detected)
+
 # A0.2.1
 
 - Added Ding sound effect on timer completion

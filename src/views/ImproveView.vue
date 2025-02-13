@@ -237,7 +237,10 @@ export default {
 
     getProjectRating(this.user.uid, this.$route.params.projectId).then(
       (obj) => {
-        if (!obj) return;
+        if (!obj || !obj.rating) {
+          this.rating = 'N/A';
+          return;
+        }
         this.rating = obj.rating;
         this.improving = obj.improvements;
       },
