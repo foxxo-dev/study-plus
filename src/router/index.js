@@ -71,10 +71,15 @@ const router = createRouter({
     },
     {
       path: '/improve',
+      name: 'improve_redirect',
+      redirect: '/improve/0',
+    },
+    {
+      path: '/improve/:projectId',
       name: 'improve',
       component: () => import('@/views/ImproveView.vue'),
       meta: { showPomodoro: false },
-    }
+    },
   ],
 });
 

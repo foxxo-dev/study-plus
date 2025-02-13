@@ -34,8 +34,8 @@
       </div>
       <div class="buttons">
         <router-link to="/dashboard" class="button">-[Gameify!]-</router-link>
-        <router-link to="/dashboard" class="button"
-          >-[Check Your Work]-</router-link
+        <router-link :to="`/improve/${$route.params.projectId}`" class="button"
+          >Check Your Work</router-link
         >
         <router-link
           :to="$route.params.projectId && `/flash/${$route.params.projectId}`"

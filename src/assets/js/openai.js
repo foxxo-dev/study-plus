@@ -56,6 +56,9 @@ export async function getChatGPTFlashcards(
 }
 
 async function gettext(doc) {
+  if (!doc) {
+    return '';
+  }
   const reader = new FileReader();
   reader.readAsArrayBuffer(doc);
 
@@ -88,7 +91,8 @@ export async function getRatingAndImproving(_doc, _rubric) {
   const rubric = await gettext(_rubric);
 
   if (!doc || !rubric) {
-    throw new Error('Missing required parameters');
+    console.error('Missing required parameters');
+    return 'params';
   }
 
   const completion = await openai.chat.completions.create({
