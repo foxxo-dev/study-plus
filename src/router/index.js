@@ -67,8 +67,14 @@ const router = createRouter({
       path: '/Tetris',
       name: 'Tetris',
       component: () => import('@/views/Tetris.vue'),
-      meta: { nimo: 'cool' },
+      meta: { foxxo: 'ziemniak' },
     },
+    {
+      path: '/improve',
+      name: 'improve',
+      component: () => import('@/views/ImproveView.vue'),
+      meta: { showPomodoro: false },
+    }
   ],
 });
 
