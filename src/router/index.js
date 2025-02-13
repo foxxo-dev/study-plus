@@ -78,7 +78,7 @@ const router = createRouter({
       path: '/improve/:projectId',
       name: 'improve',
       component: () => import('@/views/ImproveView.vue'),
-      meta: { showPomodoro: false },
+      meta: { showPomodoro: true },
     },
   ],
 });
