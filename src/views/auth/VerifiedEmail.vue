@@ -14,6 +14,28 @@
 </template>
 
 <style scoped>
+a {
+  all: unset;
+  border: none;
+  outline: none;
+  width: 100%;
+  background: rgba(92, 8, 226, 0.3);
+  cursor: pointer;
+  padding-inline: 0.5rem;
+  padding-block: 0.5rem;
+  border-radius: 0.5rem;
+  height: 2.25rem;
+  font-family: 'GlacialIndifference', sans-serif;
+  font-size: 1rem;
+  color: white;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
 #bg {
   position: fixed;
   top: 0;

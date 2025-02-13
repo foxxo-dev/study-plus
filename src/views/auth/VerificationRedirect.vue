@@ -22,7 +22,7 @@ export default {
 
     const actionCode = this.getParameterByName('oobCode');
 
-    const lang = getParameterByName('lang') || 'en';
+    const lang = this.getParameterByName('lang') || 'en';
 
     switch (mode) {
       case 'resetPassword':
@@ -32,7 +32,7 @@ export default {
         break;
       case 'verifyEmail':
         this.$router.push(
-          `/auth/verifying?oobCode=${actionCode}&mode=${mode}&lang=${lang}`,
+          `/auth/verifyingemail?oobCode=${actionCode}&mode=${mode}&lang=${lang}`,
         );
         break;
       default:

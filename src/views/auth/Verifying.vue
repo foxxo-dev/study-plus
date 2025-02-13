@@ -9,6 +9,7 @@
       We are continuously working on providing you with a safe authentication
       process.
     </p>
+    <spa class="progress"></spa>
   </main>
 </template>
 
@@ -32,9 +33,9 @@ export default {
 
     const actionCode = this.getParameterByName('oobCode');
 
-    const lang = getParameterByName('lang') || 'en';
+    const lang = this.getParameterByName('lang') || 'en';
 
-    const verified = await verifyEmail(mode, ActionCodeOperation, lang);
+    const verified = await verifyEmail(mode, actionCode, lang);
 
     if (verified) {
       this.$router.push('/auth/emailverified');
@@ -44,6 +45,43 @@ export default {
 </script>
 
 <style scoped>
+@keyframes bounce {
+  0%,
+  100% {
+    left: 0;
+  }
+  50% {
+    left: calc(100% - 25%);
+  }
+}
+
+.progress {
+  all: unset;
+  width: 80%;
+  height: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.3
+  ); /* Changed to a lighter background */
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 100%;
+  background: rgba(91, 8, 226, 0.562);
+  border-radius: 0.5rem;
+  animation: bounce 2s infinite;
+}
 #bg {
   position: fixed;
   top: 0;
