@@ -45,7 +45,7 @@ export async function getChatGPTFlashcards(
         content: `here is a ${documentType} document: "${documentData}" generate me exactly 10 flash based on the following and document information cards make it in this format, using a JSON fomrat. The topic of this is: ${topic}. Here is some additional info i included: ${description} Do not include any additional text other than the json, as it will make bad things happen, and break the database. ONLY JSON TEXT NO EXTRA. ONLY USE INFORMATION FROM THESE DOCUMENTS Use this format: [{q: "<text-of-card-question>", a: "<text-of-card-answer>"}, {q: "<text-of-card-question>", a: "<text-of-card-answer>"}, ...] make these falsh cards fun to learn, and not too boring. You can try to follow the following information, but if it seems too hard or something that dosent make sence, delete it and forget about it. here is the information: "${extraPrompt}"`,
       },
     ],
-    store: true,
+    store: false,
   });
 
   console.log(completion, completion.choices[0].message.content);

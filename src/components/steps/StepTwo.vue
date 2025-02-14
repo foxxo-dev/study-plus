@@ -11,7 +11,7 @@
     <div class="input-wrapper">
       <input
         type="file"
-        accept="application/pdf"
+        accept="image/jpeg,image/png,application/pdf,image/x-eps"
         id="profile"
         ref="fileInput"
         @change="handleFileUpload" />
