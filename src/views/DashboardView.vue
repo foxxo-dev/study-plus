@@ -5,6 +5,7 @@
     id="bgl"
     :style="{ background: averageColor }"></div>
   <NavbarDash :photoUrl="user.photoURL ? user.photoURL : null" />
+  <SurveyPopup v-if="isSurveyPopup" />
   <main>
     <h1>Welcome, {{ user.displayName || user.email }}!</h1>
     <div id="content">
@@ -73,6 +74,7 @@ import {
   getProjectsList,
   getPercentage,
 } from '@/assets/js/firebase';
+import SurveyPopup from '@/components/SurveyPopup.vue';
 
 export default {
   data() {
@@ -83,6 +85,7 @@ export default {
       averageColor: '#3f1487',
       progress: 0,
       janWodospad: false,
+      isSurveyPopup: false,
     };
   },
   computed: {
@@ -90,18 +93,29 @@ export default {
   },
   components: {
     NavbarDash,
+    SurveyPopup,
   },
   mounted() {
     if (!this.$route.params.projectId) {
       // navigate to the new project page
+      document.cookie = '_survey_popup=true; max-age=1814400';
       this.$router.push('/dashboard/new/0');
     }
+    this.setupSurveyPopup();
     this.updateUser();
     this.setupIntersectionObserver();
     this.setupProximityCheck();
   },
 
   methods: {
+    setupSurveyPopup() {
+      if (document.cookie.indexOf('_survey_popup') === -1) {
+        document.cookie = '_survey_popup=true; max-age=1814400';
+        this.isSurveyPopup = true;
+      } else {
+        this.isSurveyPopup = false;
+      }
+    },
     fadeIn() {
       const bg = document.getElementById('bg');
       bg.style.opacity = 1;
