@@ -6,6 +6,11 @@ This is a simple project. More information will be released later.
 
 # Version Control:
 
+# A0.2.3
+
+- Added Better Images
+- Fixed no image rendering Glitch
+
 # A0.2.2
 
 - Added Improve Page
