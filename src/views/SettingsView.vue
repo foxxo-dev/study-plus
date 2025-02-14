@@ -74,9 +74,9 @@ export default {
     return {
       backgroundImage: bookBg, // Initialize with default
       selectedImageUnChanged: city_bg,
-      sandImage: sand,
-      bookImage: bookBg,
-      macBg,
+      sandImage: '/src/assets/img/sand.png',
+      bookImage: '/src/assets/img/book-bg.png',
+      macBg: '/src/assets/img/mac-os.png',
       bgName: 'Background Image',
       pfpName: 'User Image',
       userDisplayName: '',
