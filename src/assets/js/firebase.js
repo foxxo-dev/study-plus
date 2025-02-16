@@ -388,3 +388,37 @@ export async function createProject(uid, project) {
   const projectsCollectionRef = collection(db, 'projects', uid, 'userProjects');
   await setDoc(doc(projectsCollectionRef, project.id), project);
 }
+export async function getProjectRating(uid, projectId) {
+  // return a object of rating and improvements
+  if (!projectId) {
+    throw new Error('Project ID is undefined');
+  }
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return {
+    rating: projectDoc.data().rating,
+    improvements: projectDoc.data().improvements,
+  };
+}
+
+export async function createProjectRating(
+  uid,
+  projectId,
+  rating,
+  improvements,
+) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  await setDoc(projectDocRef, { rating, improvements }, { merge: true });
+}
+export async function getPDFURL(uid, projectId) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return projectDoc.exists() ? projectDoc.data().pdfURL : null;
+}
+
+export async function setPDFURL(uid, projectId, pdfURL) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  await setDoc(projectDocRef, { pdfURL }, { merge: true });
+}

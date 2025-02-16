@@ -25,7 +25,7 @@
       :file-data="file"
       :file-type="fileType" />
   </main>
-  <span>Debug: {{ $route.params.step }}</span>
+  <!-- <span>Debug: {{ $route.params.step }}</span> -->
 </template>
 
 <script>
