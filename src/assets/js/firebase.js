@@ -339,7 +339,7 @@ export async function getUserFlashCards(uid, projectId) {
   if (!userDocRef) return [];
   const userDoc = await getDoc(userDocRef);
 
-  console.log(userDoc.data().flashcards);
+  // console.log(userDoc.data().flashcards);
 
   return userDoc.exists() ? userDoc.data().flashcards : [];
 }

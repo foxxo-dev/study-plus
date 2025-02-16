@@ -110,8 +110,10 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
-        this.fileData = '__base_64_img__/' + reader.result;
-        this.fileName = file.name;
+        reader.onload = () => {
+          this.fileData = '__base_64_img__/' + reader.result;
+          this.fileName = file.name;
+        };
         return;
       }
 
