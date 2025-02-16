@@ -37,8 +37,12 @@ export default {
 
     const verified = await verifyEmail(mode, actionCode, lang);
 
+    console.log(verified);
+
     if (verified) {
       this.$router.push('/auth/emailverified');
+    } else {
+      this.$router.push('/login');
     }
   },
 };
