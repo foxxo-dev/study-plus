@@ -49,7 +49,7 @@
 export default {
   data() {
     return {
-      fileData: {},
+      fileData: '',
       fileType: 'notes',
       fileName: '',
     };
@@ -74,6 +74,10 @@ export default {
               const page = await pdf.getPage(pageNum);
               const textContent = await page.getTextContent();
               text += textContent.items.map((i) => i.str).join(' ') + '-----';
+              if (text.split(' ').length > 400) {
+                text = text.split(' ').slice(0, 400).join(' ');
+                break;
+              }
             }
             resolve(text.trim());
           } catch (error) {

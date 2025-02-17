@@ -10,6 +10,7 @@
         type="text"
         placeholder="What Mood do you want?"
         id="t"
+        maxlength="40"
         v-model="aiTheme" />
     </div>
     <div class="input-wrapper">
@@ -17,6 +18,7 @@
         type="text"
         placeholder="Extra Information about your project."
         id="t"
+        maxlength="200"
         v-model="extraPrompt"
         class="big_text"></textarea>
     </div>
@@ -66,13 +68,15 @@ export default {
       const project_list = await getProjectsList(this.user.uid);
       let project_num = project_list.length;
       const projectObj = {
-        name: this.name || 'Untitled',
-        description: this.description || 'No Description',
+        name: this.name.substring(0, 80) || 'Untitled',
+        description: this.description.substring(0, 200) || 'No Description',
         fileData: this.fileData || 'No File Provided',
         fileType: this.fileType || 'No File Type',
-        AI_Theme: this.aiTheme || 'act normally, but informational',
+        AI_Theme:
+          this.aiTheme.substring(0, 80) || 'act normally, but informational',
         extraPrompt:
-          this.extraPrompt || 'the user provided no extra information.',
+          this.extraPrompt.substring(0, 200) ||
+          'the user provided no extra information.',
         id: String(project_num++),
       };
       console.log(projectObj);

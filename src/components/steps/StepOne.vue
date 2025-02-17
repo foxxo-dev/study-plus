@@ -6,7 +6,13 @@
   <p>Give a quick name and description of what you are planning to study.</p>
   <form @submit.prevent="submit">
     <div class="input-wrapper">
-      <input v-model="name" type="text" placeholder="Title" id="t" required />
+      <input
+        v-model="name"
+        type="text"
+        placeholder="Title"
+        id="t"
+        required
+        maxlength="40" />
     </div>
     <div class="input-wrapper">
       <textarea
@@ -14,6 +20,7 @@
         placeholder="Description"
         id="t"
         required
+        maxlength="200"
         class="big_text"></textarea>
     </div>
     <span class="smol" :style="{ color: 'black' }"
