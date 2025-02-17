@@ -5,7 +5,7 @@
   <h1>What resources do you have?</h1>
   <p>
     For now, upload one document. Later you can upload more. This will help us
-    understand your project.
+    understand your project. (PDF and IMAGE)
   </p>
   <form @submit.prevent="submit">
     <div class="input-wrapper">
@@ -62,12 +62,13 @@ export default {
       reader.readAsArrayBuffer(pdf);
       return new Promise((resolve, reject) => {
         reader.onload = async () => {
-            try {
+          try {
             const typedarray = new Uint8Array(reader.result);
             const pdfjsLib = await import('pdfjs-dist/build/pdf');
             const pdfjsWorker = window.location.origin + '/pdf.worker.min.mjs';
             pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-            const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+            const pdf = await pdfjsLib.getDocument({ data: typedarray })
+              .promise;
             let text = '';
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
               const page = await pdf.getPage(pageNum);
