@@ -38,10 +38,17 @@
         v-model="fileType" />
       <label for="working">Working document (e.g., Essay, worksheet)</label>
     </div>
+
     <button type="submit" style="margin-bottom: 0">Continue</button>
     <button @click.prevent="$emit('skipStepTwo')" class="unPrimary">
       Skip
     </button>
+    <span
+      class="smol"
+      :style="{ color: 'black', cursor: 'pointer' }"
+      @click="openQuizletImport"
+      >Import Quizlet (?)</span
+    >
   </form>
 </template>
 
@@ -55,6 +62,9 @@ export default {
     };
   },
   methods: {
+    openQuizletImport() {
+      window.open('https://study-plus.foxxo.app/quizlet', '_blank');
+    },
     async gettext(e) {
       const pdf = e.target.files[0];
       // read the text from the pdf

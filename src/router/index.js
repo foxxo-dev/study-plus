@@ -52,6 +52,12 @@ const router = createRouter({
       meta: { showPomodoro: false },
     },
     {
+      path: '/quizlet',
+      name: 'quizlet',
+      component: () => import('@/views/QuizletView.vue'),
+      meta: { showPomodoro: true },
+    },
+    {
       path: '/auth/verifyingemail',
       name: 'verifyingemail',
       component: () => import('@/views/auth/Verifying.vue'),

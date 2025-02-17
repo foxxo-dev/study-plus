@@ -64,6 +64,7 @@ export default {
     console.log(this.name, this.description, this.fileData, this.fileType);
   },
   methods: {
+
     async _createProject() {
       const project_list = await getProjectsList(this.user.uid);
       let project_num = project_list.length;
