@@ -11,7 +11,7 @@
     <div class="input-wrapper">
       <input
         type="file"
-        accept="image/jpeg,image/png,application/pdf,image/x-eps"
+        accept="image/jpeg,image/png,application/pdf"
         id="profile"
         ref="fileInput"
         @change="handleFileUpload" />
@@ -83,6 +83,14 @@ export default {
         reader.onerror = reject;
       });
     },
+    checkIfPDForIMG(e) {
+      const file = e.target.files[0];
+      if (file.type === 'application/pdf') {
+        return 'pdf';
+      } else if (file.type === 'image/jpeg' || file.type === 'image/png') {
+        return 'img';
+      }
+    },
 
     checkFileSize(event) {
       const file = event.target.files[0];
@@ -95,6 +103,19 @@ export default {
 
     handleFileUpload(event) {
       if (this.checkFileSize(event)) return;
+
+      if (this.checkIfPDForIMG(event) === 'img') {
+        const file = event.target.files[0];
+        // convert to base64
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+          this.fileData = '__base_64_img__/' + reader.result;
+          this.fileName = file.name;
+        };
+        return;
+      }
 
       const file = event.target.files[0];
       this.fileName = file.name; // Set fileName before processing

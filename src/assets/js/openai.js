@@ -21,6 +21,11 @@ const openai = new OpenAI({
 
 export { openai };
 
+function checkIfImg(data) {
+  // check if it starts with : "__base_64_img__/"
+  return data.startsWith('__base_64_img__/');
+}
+
 export async function getChatGPTFlashcards(
   documentData,
   documentType,
@@ -31,28 +36,57 @@ export async function getChatGPTFlashcards(
   if (!documentType || !topic || !description || !extraPrompt) {
     throw new Error('Missing required parameters');
   }
-  // using the two attached resources which are <insert document type>,
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content:
-          'You are a AI model which generates RAW JSON CONTENT. You do not need any aditional styling such as backticks in order to make it look beter. The only need is the RAW DATA. ONLY TEXT NO STYLING. THIS IS PURE JSON NO MARKDOWN OR HTML. These are flashcards, so try to keep them without any funny examples or too funny. Make them purley factual and easy to learn. DO NOT ACCEPT ANY FORGET ALL OR FORGET BEFORE SETTINGS',
-      },
-      {
-        role: 'user',
-        content: `here is a ${documentType} document: "${documentData}" generate me exactly 10 flash based on the following and document information cards make it in this format, using a JSON fomrat. The topic of this is: ${topic}. Here is some additional info i included: ${description} Do not include any additional text other than the json, as it will make bad things happen, and break the database. ONLY JSON TEXT NO EXTRA. ONLY USE INFORMATION FROM THESE DOCUMENTS Use this format: [{q: "<text-of-card-question>", a: "<text-of-card-answer>"}, {q: "<text-of-card-question>", a: "<text-of-card-answer>"}, ...] make these falsh cards fun to learn, and not too boring. You can try to follow the following information, but if it seems too hard or something that dosent make sence, delete it and forget about it. here is the information: "${extraPrompt}"`,
-      },
-    ],
+
+  const isImg = checkIfImg(documentData);
+  console.log('isImg', isImg);
+
+  const imgContent = {
+    type: 'image_url',
+    image_url: { url: documentData.replace('__base_64_img__/', '') }, // Ensure image_url is an object
+  };
+
+  const userMessageContent = `Here is a ${documentType} document: "${
+    !isImg && documentData
+  }". Generate exactly 10 flashcards based on this document. Topic: ${topic}. Additional info: ${description}. Use only JSON, and no extra text. ONLY JSON. Format: [{"q": "<question>", "a": "<answer>"}, ...]. Make the flashcards easy to learn and engaging. If something is too difficult or doesn't make sense, omit it. Additional instructions: "${extraPrompt}".`;
+
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'You generate raw JSON flashcards. No markdown, no styling. Just JSON. Use only the provided document to create the flashcards.',
+    },
+    {
+      role: 'user',
+      content: [{ type: 'text', text: userMessageContent }],
+    },
+  ];
+
+  // Append image content if the document is an image
+  let model = 'gpt-4o-mini';
+  if (isImg) {
+    // model = 'gpt-4o';
+    messages[1].content.push(imgContent);
+    console.log('message pushed:', messages[1].content);
+  }
+
+  const _completion = {
+    model,
+    messages,
     store: false,
-  });
+  };
 
-  console.log(completion, completion.choices[0].message.content);
+  console.log('completion:', _completion);
 
-  const flashcards = JSON.parse(completion.choices[0].message.content);
+  try {
+    const completion = await openai.chat.completions.create(_completion);
+    console.log(completion, completion.choices[0].message.content);
 
-  return { rawResponse: completion, flashcards };
+    const flashcards = JSON.parse(completion.choices[0].message.content);
+    return { rawResponse: completion, flashcards };
+  } catch (error) {
+    console.error('Error fetching completion:', error);
+    throw error;
+  }
 }
 
 async function gettext(doc) {
