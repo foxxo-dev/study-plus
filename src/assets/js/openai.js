@@ -207,7 +207,7 @@ export async function generate4AnswerQuestion(
     {
       role: 'system',
       content:
-        'You generate raw JSON questions. DO NOT ALWAYS MAKE THE SAME ID QUESTION COORECT. MAKE IT RANDOM, id: 0, 1, 2 or 3 can all be correct or incorrect. ONLY ONE CORRECT ANSWER. No markdown, no styling. Just JSON. Use only the provided document to create the questions.',
+        'You generate raw JSON questions. DO NOT ALWAYS MAKE THE SAME ID QUESTION COORECT. MAKE IT RANDOM, id: 0, 1, 2 or 3 can all be correct or incorrect. ONLY ONE CORRECT ANSWER. DO NOT REPEAT YOURSELF. ASK QUESTIONS WHICH CAN BE ANSWERED WITHOUT HAVING THE DOCUMENT OPEN. JUST BECAUSE YOU HAVE ACCESS DOSENT MEAN THE USER DOES. No markdown, no styling. Just JSON. Use only the provided document to create the questions.',
     },
     {
       role: 'user',
