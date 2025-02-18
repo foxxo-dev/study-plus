@@ -108,6 +108,8 @@ import {
   getProject,
   getPlayArea,
   setPlayArea,
+  updatePercentage,
+  getPercentage,
 } from '@/assets/js/firebase';
 import { generate4AnswerQuestion } from '@/assets/js/openai';
 import { mapGetters } from 'vuex';
@@ -242,7 +244,7 @@ export default {
     window.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
-    handleAnswer(id) {
+    async handleAnswer(id) {
       if (this.answers[id].correct) {
         this.points += 100;
         setPoints(this.user.uid, this.projectId, this.points).then(() => {
@@ -250,6 +252,8 @@ export default {
         });
         this.isMoving = true;
         this.createQuestions();
+        const current = await getPercentage(this.user.uid, this.projectId);
+        await updatePercentage(this.user.uid, this.projectId, current + 1);
       } else {
         this.points -= 50;
         alert('Incorrect');
