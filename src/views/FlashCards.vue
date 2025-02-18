@@ -69,7 +69,7 @@
         <div class="card_inner">
           <div class="card_front">
             <p>{{ card.q }}</p>
-            <p class="small_hint">Question</p>
+            <p class="small_hint">Question - Study+</p>
           </div>
         </div>
       </div>
@@ -77,7 +77,7 @@
         <div class="card_inner">
           <div class="card_front">
             <p>{{ card.a }}</p>
-            <p class="small_hint">Answer</p>
+            <p class="small_hint">Answer - Study+</p>
           </div>
         </div>
       </div>
