@@ -7,9 +7,12 @@
 
   <nav>
     <router-link
-      :to="$route.params.projectId && `/dashboard/${$route.params.projectId}`"
-      >< Back
+      :to="$route.params.projectId && `/dashboard/${$route.params.projectId}`">
+      < Back
     </router-link>
+    <div id="printer" @click="_print" style="cursor: pointer">
+      <i class="fa-solid fa-print"></i>
+    </div>
   </nav>
   <div id="spacer___"></div>
 
@@ -26,10 +29,10 @@
   </div>
 
   <div
-    @click="increaseIndex"
     v-if="
       flashCardData.length > 1 && currentCardIndex < flashCardData.length - 1
-    ">
+    "
+    @click="increaseIndex">
     <i class="fa-solid fa-arrow-right arrow_right"></i>
   </div>
 
@@ -59,8 +62,89 @@
     </div>
   </div>
 
-  <!-- <p id="debug">Current Card Index: {{ currentCardIndex }}</p> -->
+  <!-- Hidden div for printing all cards -->
+  <div id="all_cards" style="display: none">
+    <template v-for="(card, index) in flashCardData">
+      <div class="card">
+        <div class="card_inner">
+          <div class="card_front">
+            <p>{{ card.q }}</p>
+            <p class="small_hint">Question</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card_inner">
+          <div class="card_front">
+            <p>{{ card.a }}</p>
+            <p class="small_hint">Answer</p>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
+
+<style>
+@media print {
+  #pomodoro {
+    display: none;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  #bgl {
+    background: white !important;
+    display: none;
+  }
+  body {
+    display: grid !important;
+    background: white !important;
+  }
+  body::after {
+    display: none;
+  }
+  #bg,
+  nav,
+  .bottom_commands,
+  .arrow_left,
+  .arrow_right,
+  #cards_container {
+    display: none !important;
+    opacity: 0 !important;
+    width: 0;
+    height: 0;
+  }
+
+  #all_cards {
+    display: grid !important;
+    page-break-inside: avoid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1cm;
+    width: 100% !important;
+  }
+  .card {
+    background: white !important;
+    color: black !important;
+    border: 0.1cm solid black !important;
+    font-size: 1.1rem;
+    text-align: center;
+    box-shadow: none !important;
+    padding: 1cm;
+    width: 100% !important;
+    /* aspect-ratio: 5 / 3; */
+    page-break-inside: avoid;
+    display: flex !important;
+  }
+  .small_hint {
+    display: block !important;
+  }
+  #__vue-devtools-container__ {
+    display: none;
+  }
+}
+</style>
 
 <script>
 import {
@@ -109,6 +193,9 @@ export default {
     window.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
+    _print() {
+      window.print();
+    },
     decreaseIndex() {
       if (this.currentCardIndex > 0) {
         this.currentCardIndex--;
@@ -144,8 +231,8 @@ export default {
       const percentage = this.percentageViewed + 2;
 
       const previousPercentage = await getPercentage(
-      this.user.uid,
-      this.$route.params.projectId,
+        this.user.uid,
+        this.$route.params.projectId,
       );
 
       console.log(this.percentageViewed + 2);
@@ -153,21 +240,21 @@ export default {
       console.log(previousPercentage);
 
       if (isNaN(previousPercentage)) {
+        await updatePercentage(
+          this.user.uid,
+          this.$route.params.projectId,
+          this.percentageViewed + 2,
+        );
+        return;
+      }
+
+      if (previousPercentage >= this.percentageViewed) {
+        return;
+      }
       await updatePercentage(
         this.user.uid,
         this.$route.params.projectId,
         this.percentageViewed + 2,
-      );
-      return;
-      }
-
-      if (previousPercentage >= this.percentageViewed) {
-      return;
-      }
-      await updatePercentage(
-      this.user.uid,
-      this.$route.params.projectId,
-      this.percentageViewed + 2,
       );
     },
     async generateCards() {
@@ -224,6 +311,10 @@ export default {
 </script>
 
 <style scoped>
+.fa-print {
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 .premium {
   background: #fccb2baa !important;
 }

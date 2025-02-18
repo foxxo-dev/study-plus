@@ -46,7 +46,7 @@
           >Flash Cards</router-link
         >
         <router-link to="/dashboard" class="button premium"
-          >-[Take a Quiz]-</router-link
+          >-[Note Creator]-</router-link
         >
       </div>
       <hr id="seperator" />
