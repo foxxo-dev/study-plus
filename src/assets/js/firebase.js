@@ -422,3 +422,30 @@ export async function setPDFURL(uid, projectId, pdfURL) {
   const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
   await setDoc(projectDocRef, { pdfURL }, { merge: true });
 }
+
+export async function setPoints(uid, projectId, points) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  await setDoc(projectDocRef, { points }, { merge: true });
+}
+
+export async function getPoints(uid, projectId) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return projectDoc.exists() ? projectDoc.data().points : 0;
+}
+
+export async function getPlayArea(uid, projectId) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  const projectDoc = await getDoc(projectDocRef);
+
+  return projectDoc.exists() ? projectDoc.data().playArea : [];
+}
+export async function setPlayArea(uid, projectId, playArea) {
+  const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+  await setDoc(
+    projectDocRef,
+    { playArea: playArea },
+    { merge: true },
+  );
+}

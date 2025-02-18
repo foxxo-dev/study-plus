@@ -70,7 +70,7 @@ const router = createRouter({
       meta: { showPomodoro: false },
     },
     {
-      path: '/Tetris',
+      path: '/Tetris/:projectId',
       name: 'Tetris',
       component: () => import('@/views/Tetris.vue'),
       meta: { foxxo: 'ziemniak' },

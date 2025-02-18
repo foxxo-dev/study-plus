@@ -175,3 +175,70 @@ export async function getRatingAndImproving(_doc, _rubric) {
     throw new Error('Failed to parse JSON from OpenAI response');
   }
 }
+
+export async function generate4AnswerQuestion(
+  documentData,
+  documentType,
+  topic,
+  description,
+  extraPrompt,
+) {
+  // generate a 4 answer question, where one of them is correct and the rest are wrong
+  // generate it in a JSON fromat in this format: {"q": "<question>", "answers": [{"a": "<answer>", "correct": true}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}]}
+
+  if (!documentType || !topic || !description || !extraPrompt) {
+    throw new Error('Missing required parameters');
+  }
+
+  // check if is image
+  const isImg = checkIfImg(documentData);
+  console.log('isImg', isImg);
+
+  const imgContent = {
+    type: 'image_url',
+    image_url: { url: documentData.replace('__base_64_img__/', '') }, // Ensure image_url is an object
+  };
+
+  const userMessageContent = `Here is a ${documentType} document: "${
+    !isImg && documentData
+  }". Generate a 4-answer question based on this document. Topic: ${topic}. Additional info: ${description}. Use only JSON, and no extra text. ONLY JSON. Format: {"q": "<question>", "answers": [{"a": "<answer>", "correct": true}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}]. Make the question easy to learn and engaging. If something is too difficult or doesn't make sense, omit it. Additional instructions: "${extraPrompt}". each answer should only be 1-2 words, and the questions should also not be too long. long answers result in breaking the webpage which could even result in you getting damaged`;
+
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'You generate raw JSON questions. No markdown, no styling. Just JSON. Use only the provided document to create the questions.',
+    },
+    {
+      role: 'user',
+      content: [{ type: 'text', text: userMessageContent }],
+    },
+  ];
+
+  // Append image content if the document is an image
+  let model = 'gpt-4o-mini';
+  if (isImg) {
+    // model = 'gpt-4o';
+    messages[1].content.push(imgContent);
+    console.log('message pushed:', messages[1].content);
+  }
+
+  const _completion = {
+    model,
+    messages,
+    store: false,
+  };
+
+  console.log('completion:', _completion);
+
+  try {
+    const completion = await openai.chat.completions.create(_completion);
+    console.log(completion, completion.choices[0].message.content);
+
+    const question = JSON.parse(completion.choices[0].message.content);
+    return { rawResponse: completion, question };
+  } catch (error) {
+    console.error('Error fetching completion:', error);
+    throw error;
+  }
+}
