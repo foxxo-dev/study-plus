@@ -123,7 +123,7 @@ export default {
       bg.style.opacity = 1;
     },
     async updateUser() {
-      if (!this.user) return;
+      // if (!this.user) return;
       const userPfp = await getUserPfp(this.user.uid);
       this.user.photoURL = userPfp || null;
       this.averageColor = await getAverageColor(this.user.uid);

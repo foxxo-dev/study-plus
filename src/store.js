@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import { _getUser } from '@/assets/js/firebase';
 
 export const store = createStore({
   state: {
@@ -15,6 +16,9 @@ export const store = createStore({
     },
   },
   getters: {
-    user: (state) => state.user,
+    user: (state) => {
+      console.log(_getUser());
+      return _getUser();
+    },
   },
 });

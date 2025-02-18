@@ -21,7 +21,7 @@
       :to="$route.params.projectId && `/settings/${$route.params.projectId}`"
       >Settings</router-link
     >
-    <router-link to="/">Log Out</router-link>
+    <router-link @click="logOut">Log Out</router-link>
   </div>
 
   <div id="spacer___"></div>
@@ -33,6 +33,12 @@ export default {
     photoUrl: {
       type: String,
       default: null,
+    },
+  },
+  methods: {
+    logOut() {
+      localStorage.removeItem('user');
+      this.$router.push('/login');
     },
   },
 };

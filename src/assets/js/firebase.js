@@ -9,6 +9,7 @@ import {
   updateProfile,
   sendEmailVerification,
   applyActionCode,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -35,6 +36,33 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
+
+export function _getUser() {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (user) {
+    localStorage.setItem('user', JSON.stringify(user));
+    return user;
+  } else {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  }
+}
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    localStorage.setItem('user', JSON.stringify(user));
+  } else {
+    localStorage.removeItem('user');
+  }
+});
+
+export function getUserUID() {
+  const user = getUser();
+  return user ? user.uid : null;
+}
 
 export async function updatePercentage(uid, projectId, percentage) {
   const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
@@ -443,9 +471,5 @@ export async function getPlayArea(uid, projectId) {
 }
 export async function setPlayArea(uid, projectId, playArea) {
   const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
-  await setDoc(
-    projectDocRef,
-    { playArea: playArea },
-    { merge: true },
-  );
+  await setDoc(projectDocRef, { playArea: playArea }, { merge: true });
 }

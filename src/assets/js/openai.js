@@ -226,7 +226,7 @@ export async function generate4AnswerQuestion(
   const _completion = {
     model,
     messages,
-    store: false,
+    store: true,
   };
 
   console.log('completion:', _completion);
