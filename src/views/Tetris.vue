@@ -256,7 +256,7 @@ export default {
         if (isNaN(current) || !current) {
           current = 0;
         }
-        await updatePercentage(this.user.uid, this.projectId, current + 1);
+        await updatePercentage(this.user.uid, this.projectId, current + 1.352897);
       } else {
         this.points -= 50;
         alert('Incorrect');
