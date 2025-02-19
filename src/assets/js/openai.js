@@ -176,6 +176,8 @@ export async function getRatingAndImproving(_doc, _rubric) {
   }
 }
 
+const seenQuestions = new Set();
+
 export async function generate4AnswerQuestion(
   documentData,
   documentType,
@@ -183,31 +185,27 @@ export async function generate4AnswerQuestion(
   description,
   extraPrompt,
 ) {
-  // generate a 4 answer question, where one of them is correct and the rest are wrong
-  // generate it in a JSON fromat in this format: {"q": "<question>", "answers": [{"a": "<answer>", "correct": true}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}]}
-
   if (!documentType || !topic || !description || !extraPrompt) {
     throw new Error('Missing required parameters');
   }
 
-  // check if is image
   const isImg = checkIfImg(documentData);
   console.log('isImg', isImg);
 
   const imgContent = {
     type: 'image_url',
-    image_url: { url: documentData.replace('__base_64_img__/', '') }, // Ensure image_url is an object
+    image_url: { url: documentData.replace('__base_64_img__/', '') },
   };
 
   const userMessageContent = `Here is a ${documentType} document: "${
     !isImg && documentData
-  }". Generate a 4-answer question based on this document. Topic: ${topic}. Additional info: ${description}. Use only JSON, and no extra text. ONLY JSON. Format: {"q": "<question>", "answers": [{"a": "<answer>", "correct": true}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}]. Make the question easy to learn and engaging. If something is too difficult or doesn't make sense, omit it. Additional instructions: "${extraPrompt}". each answer should only be 1-2 words, and the questions should also not be too long. long answers result in breaking the webpage which could even result in you getting damaged`;
+  }". Generate a 4-answer question based on this document. Topic: ${topic}. Additional info: ${description}. Use only JSON, and no extra text. ONLY JSON. Format: {"q": "<question>", "answers": [{"a": "<answer>", "correct": true}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}, {"a": "<answer>", "correct": false}]}. Make the question easy to learn and engaging. If something is too difficult or doesn't make sense, omit it. Additional instructions: "${extraPrompt}". Each answer should only be 1-2 words, and the questions should also not be too long.`;
 
   const messages = [
     {
       role: 'system',
       content:
-        'You generate raw JSON questions. DO NOT ALWAYS MAKE THE SAME ID QUESTION COORECT. MAKE IT RANDOM, id: 0, 1, 2 or 3 can all be correct or incorrect. ONLY ONE CORRECT ANSWER. DO NOT REPEAT YOURSELF. ASK QUESTIONS WHICH CAN BE ANSWERED WITHOUT HAVING THE DOCUMENT OPEN. JUST BECAUSE YOU HAVE ACCESS DOSENT MEAN THE USER DOES. No markdown, no styling. Just JSON. Use only the provided document to create the questions.',
+        'You generate raw JSON questions. DO NOT REPEAT QUESTIONS THAT HAVE ALREADY BEEN GENERATED. Use diverse wording and variations. DO NOT ALWAYS MAKE THE SAME ID QUESTION CORRECT. MAKE IT RANDOM (0, 1, 2, or 3 can be correct). ONLY ONE CORRECT ANSWER. ASK QUESTIONS WHICH CAN BE ANSWERED WITHOUT HAVING THE DOCUMENT OPEN. No markdown, no styling. Just JSON. Use only the provided document to create the questions.',
     },
     {
       role: 'user',
@@ -215,16 +213,13 @@ export async function generate4AnswerQuestion(
     },
   ];
 
-  // Append image content if the document is an image
-  let model = 'gpt-4o-mini';
   if (isImg) {
-    // model = 'gpt-4o';
     messages[1].content.push(imgContent);
     console.log('message pushed:', messages[1].content);
   }
 
   const _completion = {
-    model,
+    model: 'gpt-4o-mini',
     messages,
     store: true,
   };
@@ -232,11 +227,31 @@ export async function generate4AnswerQuestion(
   console.log('completion:', _completion);
 
   try {
-    const completion = await openai.chat.completions.create(_completion);
-    console.log(completion, completion.choices[0].message.content);
+    let uniqueQuestion = null;
+    let maxAttempts = 5;
 
-    const question = JSON.parse(completion.choices[0].message.content);
-    return { rawResponse: completion, question };
+    while (maxAttempts > 0) {
+      const completion = await openai.chat.completions.create(_completion);
+      console.log(completion, completion.choices[0].message.content);
+
+      const question = JSON.parse(completion.choices[0].message.content);
+
+      if (!seenQuestions.has(question.q)) {
+        seenQuestions.add(question.q);
+        uniqueQuestion = question;
+        break;
+      }
+
+      maxAttempts--;
+    }
+
+    if (!uniqueQuestion) {
+      throw new Error(
+        'Failed to generate a unique question after multiple attempts.',
+      );
+    }
+
+    return { question: uniqueQuestion };
   } catch (error) {
     console.error('Error fetching completion:', error);
     throw error;

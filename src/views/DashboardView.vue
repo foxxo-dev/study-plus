@@ -14,10 +14,8 @@
           <span class="title">Projects</span>
           <router-link
             class="project"
-            :class="
-              $route.params.projectId === project.id.toString() && 'selected'
-            "
             v-for="project in projects"
+            :class="{ selected: project.id == $route.params.projectId }"
             :key="project.id"
             :to="`/dashboard/${project.id}`">
             <div class="projectLink">
@@ -151,6 +149,7 @@ export default {
       }
 
       console.log('percentage:', this.percentage);
+      console.log(this.currentProject.id);
     },
     async fetchBackground() {
       if (!this.user || !this.user.uid) return;

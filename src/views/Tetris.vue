@@ -252,7 +252,10 @@ export default {
         });
         this.isMoving = true;
         this.createQuestions();
-        const current = await getPercentage(this.user.uid, this.projectId);
+        let current = await getPercentage(this.user.uid, this.projectId);
+        if (isNaN(current) || !current) {
+          current = 0;
+        }
         await updatePercentage(this.user.uid, this.projectId, current + 1);
       } else {
         this.points -= 50;

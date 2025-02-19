@@ -64,7 +64,7 @@
 
   <!-- Hidden div for printing all cards -->
   <div id="all_cards" style="display: none">
-    <template v-for="(card, index) in flashCardData">
+    <template v-for="card in flashCardData">
       <div class="card">
         <div class="card_inner">
           <div class="card_front">
