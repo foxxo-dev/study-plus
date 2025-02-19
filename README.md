@@ -6,6 +6,16 @@ This is a simple project. More information will be released later.
 
 # Version Control:
 
+# A0.2.1
+
+- Patch fixes
+- Bug fixes
+
+# A0.2.0
+
+- Added Gameify Function
+- Fixed USER LOGGING function.
+
 # A0.2.3
 
 - Added Better Images
