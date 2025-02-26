@@ -17,7 +17,8 @@
       </span>
       <p class="bigger">Improvements:</p>
       <li v-if="!improving || improving.length == 0">
-        Please Include your Files First.
+        Please Include your Files First. - You understand that AI may generate
+        incorrect or false information.
       </li>
       <ol>
         <template v-for="improvement in improving">
@@ -64,6 +65,7 @@
       </div>
     </div>
   </main>
+  <AiDisclamer />
 </template>
 <style scoped>
 nav > a {
@@ -206,6 +208,7 @@ import { getRatingAndImproving } from '@/assets/js/openai';
 import { initializeRecaptchaConfig } from 'firebase/auth';
 import { mapGetters } from 'vuex';
 import bookBg from '@/assets/img/book-bg.png';
+import AiDisclamer from '@/components/AiDisclamer.vue';
 export default {
   data() {
     return {
@@ -221,6 +224,9 @@ export default {
       averageColor: 'rgba(0, 0, 0, 0.0)',
       regenerations: 4,
     };
+  },
+  components: {
+    AiDisclamer,
   },
   async mounted() {
     this.averageColor = await getAverageColor(this.user.uid);

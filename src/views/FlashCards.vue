@@ -40,6 +40,9 @@
     <div class="card" v-if="flashCardData.length === 0" @click="generateCards">
       <div class="card_inner">
         <p>{{ generating ? 'Please Wait...' : 'Click To Generate Cards' }}</p>
+        <p class="small_hint">
+          You understand that AI may generate incorrect or false information.
+        </p>
       </div>
     </div>
 
@@ -64,47 +67,57 @@
 
   <!-- Hidden div for printing all cards -->
   <div id="all_cards" style="display: none">
-    <template v-for="card in flashCardData">
-      <div class="card">
-        <div class="card_inner">
-          <div class="card_front">
-            <p>{{ card.q }}</p>
-            <p class="small_hint">Question - Study+</p>
+    <template v-for="(page, _index) in pageAmount">
+      <div class="question">
+        <template v-for="(card, index) in Array(6)" :key="index">
+          <!-- Two cards per row, each with a question and answer back-to-back -->
+
+          <!-- Question card (front) -->
+          <div class="card print-card">
+            <div class="card_inner">
+              <div class="card_front">
+                <p>{{ flashCardData[page + index - 1] }}</p>
+                <p class="small_hint">Question - Study+</p>
+              </div>
+            </div>
           </div>
-        </div>
+        </template>
       </div>
-      <div class="card">
-        <div class="card_inner">
-          <div class="card_front">
-            <p>{{ card.a }}</p>
-            <p class="small_hint">Answer - Study+</p>
+      <div class="answer">
+        <template v-for="(card, index) in Array(6)" :key="index">
+          <!-- Two cards per row, each with a question and answer back-to-back -->
+
+          <!-- Question card (front) -->
+          <div class="card print-card">
+            <div class="card_inner">
+              <div class="card_front">
+                <p>{{ flashCardData[page + index - 1] }}</p>
+                <p class="small_hint">Answer - Study+</p>
+              </div>
+            </div>
           </div>
-        </div>
+        </template>
       </div>
     </template>
   </div>
+  <AiDisclamer />
 </template>
 
 <style>
 @media print {
-  #pomodoro {
-    display: none;
-  }
   * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  #bgl {
-    background: white !important;
-    display: none;
-  }
+
   body {
-    display: grid !important;
     background: white !important;
   }
+
   body::after {
     display: none;
   }
+
   #bg,
   nav,
   .bottom_commands,
@@ -112,19 +125,23 @@
   .arrow_right,
   #cards_container {
     display: none !important;
-    opacity: 0 !important;
-    width: 0;
-    height: 0;
   }
 
   #all_cards {
-    display: grid !important;
-    page-break-inside: avoid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1cm;
-    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: column;
   }
+
   .card {
+    width: 100% !important;
+    aspect-ratio: none !important;
+    height: 100% !important;
+  }
+
+  .card.print-card {
     background: white !important;
     color: black !important;
     border: 0.1cm solid black !important;
@@ -132,16 +149,36 @@
     text-align: center;
     box-shadow: none !important;
     padding: 1cm;
-    width: 100% !important;
-    /* aspect-ratio: 5 / 3; */
+    width: 100%; /* Adjust width for two cards per row */
+    height: 100% !important;
     page-break-inside: avoid;
     display: flex !important;
+    margin-bottom: 20px;
   }
+
+  .question {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(1fr, 3);
+    background: red;
+  }
+
+  .answer {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(1fr, 3);
+    background: blue;
+  }
+
   .small_hint {
     display: block !important;
   }
-  #__vue-devtools-container__ {
-    display: none;
+
+  /* Hide BGL when printing */
+  #bgl {
+    display: none !important;
   }
 }
 </style>
@@ -159,6 +196,7 @@ import {
   updatePercentage,
 } from '@/assets/js/firebase';
 import { getChatGPTFlashcards } from '@/assets/js/openai';
+import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -168,13 +206,30 @@ export default {
       averageColor: '#000000',
       cardFlipped: false,
       currentCardIndex: 0,
-      flashCardData: [],
+      pageAmount: 0,
+      flashCardData: [
+        { q: '1', a: 'yep' },
+        { q: '2', a: 'yep' },
+        { q: '3', a: 'yep' },
+        { q: '4', a: 'yep' },
+        { q: '5', a: 'yep' },
+        { q: '6', a: 'yep' },
+        { q: '7', a: 'yep' },
+        { q: '8', a: 'yep' },
+        { q: '9', a: 'yep' },
+      ],
       generating: false,
       regenerations: 4,
       percentageViewed: 0,
     };
   },
+  components: {
+    AiDisclamer,
+  },
   async mounted() {
+    console.log(this.flashCardData.length);
+    const length = this.flashCardData.length;
+    this.pageAmount = Math.round(length / 6);
     if (this.user?.uid) {
       this.averageColor = await getAverageColor(this.user.uid);
       this.flashCardData =

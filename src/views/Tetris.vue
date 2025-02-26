@@ -98,6 +98,7 @@
       </div>
     </div>
   </div>
+  <AiDisclamer />
 </template>
 <script>
 import {
@@ -112,8 +113,12 @@ import {
   getPercentage,
 } from '@/assets/js/firebase';
 import { generate4AnswerQuestion } from '@/assets/js/openai';
+import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
 export default {
+  components: {
+    AiDisclamer
+  },
   data() {
     return {
       question: 'Loading...',
@@ -256,7 +261,11 @@ export default {
         if (isNaN(current) || !current) {
           current = 0;
         }
-        await updatePercentage(this.user.uid, this.projectId, current + 1.352897);
+        await updatePercentage(
+          this.user.uid,
+          this.projectId,
+          current + 1.352897,
+        );
       } else {
         this.points -= 50;
         alert('Incorrect');

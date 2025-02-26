@@ -27,7 +27,7 @@
         </span>
       </div>
       <span class="smol" :style="{ color: isError ? 'red' : 'black' }">{{
-        isError ? errorMessage : 'Forgot Password?'
+        isError ? errorMessage : 'Forgot Password?' + ''
       }}</span>
       <button @click.prevent="login">Login</button>
     </form>
@@ -48,6 +48,7 @@
       </button>
     </div>
   </main>
+  <AiDisclamer />
 </template>
 
 <script>
@@ -55,6 +56,7 @@ import { signInWithEmail, signInWithGoogle } from '@/assets/js/firebase.js';
 import { mapActions } from 'vuex';
 import EyeOpen from '@/components/icons/EyeOpen.vue';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
+import AiDisclamer from '@/components/AiDisclamer.vue';
 
 export default {
   data() {
@@ -69,6 +71,7 @@ export default {
   components: {
     EyeOpen,
     EyeClosed,
+    AiDisclamer,
   },
   beforeMount() {
     this.user = null;

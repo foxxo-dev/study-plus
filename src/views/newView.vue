@@ -25,14 +25,15 @@
       :file-data="file"
       :file-type="fileType" />
   </main>
+  <FormDisclaimer />
   <!-- <span>Debug: {{ $route.params.step }}</span> -->
 </template>
 
 <script>
+import FormDisclaimer from '@/components/FormDisclaimer.vue';
 import StepOne from '@/components/steps/StepOne.vue';
 import StepThree from '@/components/steps/StepThree.vue';
 import StepTwo from '@/components/steps/StepTwo.vue';
-
 
 export default {
   data() {
@@ -62,6 +63,7 @@ export default {
     StepOne,
     StepTwo,
     StepThree,
+    FormDisclaimer,
   },
 };
 </script>
