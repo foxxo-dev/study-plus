@@ -29,7 +29,7 @@
       <span class="smol" :style="{ color: isError ? 'red' : 'black' }">{{
         isError ? errorMessage : 'Forgot Password?' + ''
       }}</span>
-      <button @click.prevent="login">Login</button>
+      <button @click.prevent="promptNormal">Login</button>
     </form>
     <div class="seperator">
       <hr />
@@ -37,18 +37,24 @@
       <hr />
     </div>
     <div class="special_container">
-      <button @click="loginGoogle" class="special">
+      <button @click="promptGoogle" class="special">
         <i class="fa-brands fa-google"></i>
       </button>
-      <button @click="loginGoogle" class="special">
+      <button @click="promptGoogle" class="special" disabled>
         <i class="fa-brands fa-facebook"></i>
       </button>
-      <button @click="loginGoogle" class="special">
+      <button @click="promptGoogle" class="special" disabled>
         <i class="fa-brands fa-apple"></i>
       </button>
     </div>
   </main>
   <AiDisclamer />
+  <TermsPopup
+    v-if="popup"
+    :normal="login"
+    :google="loginGoogle"
+    :selectedType="selectedType"
+    :no="popupOff" />
 </template>
 
 <script>
@@ -57,6 +63,7 @@ import { mapActions } from 'vuex';
 import EyeOpen from '@/components/icons/EyeOpen.vue';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
 import AiDisclamer from '@/components/AiDisclamer.vue';
+import TermsPopup from '@/components/TermsPopup.vue';
 
 export default {
   data() {
@@ -66,17 +73,23 @@ export default {
       isPasswordHidden: true,
       isError: false,
       errorMessage: null,
+      popup: false,
+      selectedType: null,
     };
   },
   components: {
     EyeOpen,
     EyeClosed,
     AiDisclamer,
+    TermsPopup,
   },
   beforeMount() {
     this.user = null;
   },
   methods: {
+    popupOff() {
+      this.popup = false;
+    },
     ...mapActions(['loginUser']),
 
     async succesedLogin(user) {
@@ -89,15 +102,20 @@ export default {
       console.log('Password visibility toggled:', this.isPasswordHidden);
     },
 
+    async promptGoogle() {
+      this.selectedType = 'google';
+      console.log('Prompting Google login', this.selectedType);
+      this.popup = true;
+    },
+
+    async promptNormal() {
+      this.selectedType = 'normal';
+      console.log('Prompting Password login', this.selectedType);
+      this.popup = true;
+    },
+
     async loginGoogle() {
-      // ask the user if they agree to the terms and conditions
-      // use a prompt popup for this
-      const userAgreed = confirm(
-        'By logging in, you agree to 3rd party softwares terms and conditions, and agree to the following: \n\n- You understand that AI may generate incorrect or false information. \n- You understand that this is a free service and may not be available at all times. \n- You understand that this service is not responsible for any data loss or corruption. \n\nDo you agree to these terms?',
-      );
-      if (!userAgreed) {
-        return;
-      }
+      this.popupOff();
       try {
         const user = await signInWithGoogle(
           (user) => this.succesedLogin(user),
@@ -116,12 +134,7 @@ export default {
     },
 
     async login() {
-      const userAgreed = confirm(
-        'By logging in, you agree to 3rd party softwares terms and conditions, and agree to the following: \n\n- You understand that AI may generate incorrect or false information. \n- You understand that this is a free service and may not be available at all times. \n- You understand that this service is not responsible for any data loss or corruption. \n\nDo you agree to these terms?',
-      );
-      if (!userAgreed) {
-        return;
-      }
+      this.popupOff();
       try {
         const user = await signInWithEmail(
           this.email,
