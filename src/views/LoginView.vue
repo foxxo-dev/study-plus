@@ -93,6 +93,7 @@ export default {
     ...mapActions(['loginUser']),
 
     async succesedLogin(user) {
+      loggedInNewUser(Date.now(), this.selectedType);
       this.loginUser(user); // Store user in Vuex
       this.$router.push('/dashboard/0');
     },
