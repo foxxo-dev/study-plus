@@ -90,6 +90,14 @@ export default {
     },
 
     async loginGoogle() {
+      // ask the user if they agree to the terms and conditions
+      // use a prompt popup for this
+      const userAgreed = confirm(
+        'By logging in, you agree to 3rd party softwares terms and conditions, and agree to the following: \n\n- You understand that AI may generate incorrect or false information. \n- You understand that this is a free service and may not be available at all times. \n- You understand that this service is not responsible for any data loss or corruption. \n\nDo you agree to these terms?',
+      );
+      if (!userAgreed) {
+        return;
+      }
       try {
         const user = await signInWithGoogle(
           (user) => this.succesedLogin(user),
@@ -108,6 +116,12 @@ export default {
     },
 
     async login() {
+      const userAgreed = confirm(
+        'By logging in, you agree to 3rd party softwares terms and conditions, and agree to the following: \n\n- You understand that AI may generate incorrect or false information. \n- You understand that this is a free service and may not be available at all times. \n- You understand that this service is not responsible for any data loss or corruption. \n\nDo you agree to these terms?',
+      );
+      if (!userAgreed) {
+        return;
+      }
       try {
         const user = await signInWithEmail(
           this.email,
