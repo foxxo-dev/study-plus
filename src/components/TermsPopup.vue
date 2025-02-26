@@ -2,21 +2,23 @@
   <div class="background_blur">
     <main>
       <p>
-        By logging in, you agree to 3rd party softwares terms and conditions,
+        By logging in, you agree to 3rd party software's terms and conditions,
         and agree to the following:
+      </p>
+      <ul>
         <li>
           You understand that AI may generate incorrect or false information.
         </li>
         <li>
           You understand that this is a free service and may not be available at
-          all times
+          all times.
         </li>
         <li>
           You understand that this service is not responsible for any data loss
           or corruption.
         </li>
-        <strong>Do you agree to these terms?</strong>
-      </p>
+      </ul>
+      <strong>Do you agree to these terms?</strong>
       <div class="button_container">
         <button @click="proceed">Yes</button>
         <button @click="no">No</button>

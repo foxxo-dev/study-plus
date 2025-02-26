@@ -64,6 +64,7 @@ import EyeOpen from '@/components/icons/EyeOpen.vue';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
 import AiDisclamer from '@/components/AiDisclamer.vue';
 import TermsPopup from '@/components/TermsPopup.vue';
+import { loggedInNewUser } from '@/assets/js/loginLogger';
 
 export default {
   data() {
@@ -92,8 +93,12 @@ export default {
     },
     ...mapActions(['loginUser']),
 
-    async succesedLogin(user) {
+    async logUserLogin() {
       loggedInNewUser(Date.now(), this.selectedType);
+    },
+
+    async succesedLogin(user) {
+      this.logUserLogin();
       this.loginUser(user); // Store user in Vuex
       this.$router.push('/dashboard/0');
     },
