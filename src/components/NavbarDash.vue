@@ -134,13 +134,12 @@ button {
 
 .logout-btn {
   all: unset;
-  background: #ff4040;
+  background: #ff404044;
   color: white;
   padding: 1rem;
   font-size: 1.1rem;
   text-align: center;
   cursor: pointer;
   border-radius: 0.3rem;
-  width: 100%;
 }
 </style>
