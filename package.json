@@ -7,6 +7,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "vite build",
+    "deploy": "sudo ./deploy.sh",
     "preview": "vite preview"
   },
   "dependencies": {
