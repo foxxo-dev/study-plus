@@ -54,6 +54,12 @@ export default {
     window.removeEventListener('resize', this.updateAnchorPosition);
     this.stopTimer();
   },
+  watch: {
+    // Watch for changes in route
+    $route(to, from) {
+      this.handleRouteChange(to);
+    },
+  },
   methods: {
     updateAnchorPosition() {
       const anchor = document.getElementById('position_pomodoro');
@@ -143,6 +149,16 @@ export default {
       document.querySelector(
         'title',
       ).textContent = `${this.timeRemaining} | Study+ | Learn more, easier.`;
+    },
+    handleRouteChange(to) {
+      // Check if the route contains "dashboard"
+      if (!to.path.includes('dashboard') && !this.isMinimized) {
+        // Hide the Pomodoro timer if not on dashboard and not minimized
+        this.$refs.pomodoro.style.display = 'none';
+      } else {
+        // Ensure Pomodoro is visible when on dashboard or minimized
+        this.$refs.pomodoro.style.display = 'block';
+      }
     },
   },
   components: {
