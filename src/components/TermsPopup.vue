@@ -5,7 +5,14 @@
         <input type="checkbox" v-model="agreed" value="normal" />
         <a href="/terms" target="_blank">Do you agree to the terms?</a>
       </div>
-      <span class="tiny">{{ remaining }} ms</span>
+      <span
+        class="tiny"
+        @click="proceed"
+        :style="{ cursor: typeof remaining === 'string' ? 'pointer' : 'auto' }"
+        >{{
+          typeof remaining === 'string' ? remaining : remaining + ' ms'
+        }}</span
+      >
     </main>
   </div>
 </template>
@@ -16,7 +23,7 @@ export default {
   data() {
     return {
       agreed: false,
-      remaining: 'Once you click, a 3 second timer will start.',
+      remaining: 'I do not accept.',
     };
   },
   props: {
