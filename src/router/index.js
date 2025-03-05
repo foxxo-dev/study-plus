@@ -70,10 +70,16 @@ const router = createRouter({
       meta: { showPomodoro: false },
     },
     {
+      path: '/terms',
+      name: 'terms',
+      component: () => import('@/views/TermsAndConditions.vue'),
+      meta: { showPomodoro: false },
+    },
+    {
       path: '/Tetris/:projectId',
       name: 'Tetris',
       component: () => import('@/views/Tetris.vue'),
-      meta: { foxxo: 'ziemniak' },
+      meta: { showPomodoro: true },
     },
     {
       path: '/improve',
