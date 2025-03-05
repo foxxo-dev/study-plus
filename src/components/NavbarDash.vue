@@ -21,7 +21,8 @@
       :to="$route.params.projectId && `/settings/${$route.params.projectId}`"
       >Settings</router-link
     >
-    <router-link @click="logOut">Log Out</router-link>
+    <!-- Changed to a button to ensure the logout method works -->
+    <button @click="logOut" class="logout-btn">Log Out</button>
   </div>
 
   <div id="spacer___"></div>
@@ -64,7 +65,6 @@ nav {
     #00000012 60%,
     #0000 100%
   );
-
   color: white;
   width: 100%;
   position: fixed;
@@ -129,6 +129,18 @@ button {
 
 #spacer___ {
   height: 6rem;
+  width: 100%;
+}
+
+.logout-btn {
+  all: unset;
+  background: #ff4040;
+  color: white;
+  padding: 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.3rem;
   width: 100%;
 }
 </style>

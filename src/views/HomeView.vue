@@ -105,12 +105,16 @@
 
 <script>
 import NavbarDefault from '@/components/NavbarDefault.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
     return {
       loading: true,
     };
+  },
+  computed: {
+    ...mapGetters(['user']),
   },
   methods: {
     navigateToLogin() {
@@ -122,6 +126,9 @@ export default {
   },
   mounted() {
     // Simulate loading
+    if (this.user) {
+      this.$router.push('/dashboard/0');
+    }
     setTimeout(() => {
       this.loading = false;
     }, 1234);

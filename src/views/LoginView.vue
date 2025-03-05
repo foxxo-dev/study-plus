@@ -59,7 +59,7 @@
 
 <script>
 import { signInWithEmail, signInWithGoogle } from '@/assets/js/firebase.js';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import EyeOpen from '@/components/icons/EyeOpen.vue';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
 import AiDisclamer from '@/components/AiDisclamer.vue';
@@ -87,11 +87,18 @@ export default {
   beforeMount() {
     this.user = null;
   },
+  mounted() {
+    // check if the user is already logged in
+    if (this.user) {
+      this.$router.push('/dashboard/0');
+    }
+  },
   methods: {
     popupOff() {
       this.popup = false;
     },
     ...mapActions(['loginUser']),
+    ...mapGetters(['user']),
 
     async logUserLogin() {
       loggedInNewUser(Date.now(), this.selectedType);
