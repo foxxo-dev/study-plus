@@ -55,11 +55,6 @@
         style="border-radius: 1rem"></div>
     </div>
   </main>
-  <!-- <div id="debug">current project: {{ $route.params.projectId }}</div> -->
-  <div id="janwodospad" v-if="janWodospad">
-    Get the fuck out you agar agar packet (no this will not dissapear only on
-    this page tho) mr agara agar
-  </div>
 </template>
 
 <script>
