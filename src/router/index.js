@@ -92,6 +92,13 @@ const router = createRouter({
       component: () => import('@/views/ImproveView.vue'),
       meta: { showPomodoro: true },
     },
+    {
+      path: '/apitest',
+      name: 'apitest',
+      component: () => import('@/views/APITest.vue'),
+      meta: { showPomodoro: false },
+    }
+
   ],
 });
 

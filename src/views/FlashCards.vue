@@ -47,17 +47,18 @@
     </div>
 
     <div
-      class="card"
+      class="card flippableCard"
+      :class="{ flipped: cardFlipped }"
       v-for="(card, index) in flashCardData"
       v-show="index === currentCardIndex"
       :key="index"
       @click="flipCard">
       <div class="card_inner">
-        <div class="card_front" v-if="!cardFlipped">
+        <div class="card_front">
           <p>{{ card.q }}</p>
           <p class="small_hint">Question</p>
         </div>
-        <div class="card_back" v-else>
+        <div class="card_back">
           <p>{{ card.a }}</p>
           <p class="small_hint">Answer</p>
         </div>
@@ -502,5 +503,34 @@ button {
   height: 100%;
   opacity: 0;
   transition: opacity 0.5s;
+}
+.flippableCard {
+  perspective: 1px;
+  transform-style: preserve-3d;
+  transition: 1s;
+}
+.flippableCard.flipped {
+  transform: rotateX(180deg);
+}
+.card_front,
+.card_back {
+  transition: 0s 0.5s;
+}
+
+.card_front,
+.flipped .card_back {
+  display: none;
+}
+.card_back,
+.flipped .card_front {
+  display: block;
+}
+.card_front {
+  transform: rotateX(180deg);
+}
+
+.flippableCard.flipped .card_front,
+.flippableCard.flipped .card_back {
+  transition: display 0s 0.5s;
 }
 </style>
