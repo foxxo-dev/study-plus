@@ -35,3 +35,7 @@ coverage
 .env.test.local
 .env.production.local
 .env
+.firebase/hosting*
+.firebase
+.firebase/
+.firebase/*
