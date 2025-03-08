@@ -1,4 +1,4 @@
-const apiUri = 'https://study-plus-api-foxxos-projects-70ddd111.vercel.app/';
+const apiUri = 'https://study-plus-api.vercel.app/';
 
 export async function getChatGPTFlashcards(
   documentData,
