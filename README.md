@@ -6,6 +6,11 @@ This is a simple project. More information will be released later.
 
 # Version Control:
 
+# A0.3.0
+- Saftey Notices
+- Updated Read/Write
+- Added API Saftey
+
 # A0.2.1
 
 - Patch fixes
