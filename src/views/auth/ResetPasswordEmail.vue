@@ -15,7 +15,9 @@
       placeholder="Email"
       id="e"
       v-if="showEmailField" />
-    <button @click.prevent="promptNormal">Send Reset Email</button>
+    <button @click.prevent="promptNormal" :disabled="!showEmailField">
+      {{ showEmailField ? 'Send Email' : 'Email Sent!' }}
+    </button>
   </main>
 </template>
 
@@ -51,6 +53,9 @@ a {
   z-index: -1;
   object-fit: cover;
   object-position: center;
+}
+input {
+  margin-bottom: 1rem;
 }
 main {
   width: 25rem;
@@ -149,7 +154,7 @@ input {
   background: rgba(0, 0, 0, 0.1);
   padding-inline: 0.5rem;
   padding-block: 0.5rem;
-  padding-left: 3rem;
+  padding-left: 1rem;
   border-radius: 0.5rem;
   font-size: 1rem;
   height: 2.5rem;
@@ -270,6 +275,10 @@ export default {
         this.title = 'Your email has been sent. Please check your inbox.';
         this.showEmailField = false;
         this.email = '';
+
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 15000);
       }
     },
   },

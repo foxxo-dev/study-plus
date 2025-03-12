@@ -11,6 +11,7 @@ import {
   applyActionCode,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  confirmPasswordReset,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -487,11 +488,12 @@ export async function sendResetPassEmail(email) {
 
 export async function resetPassword(obbCode, newPassword) {
   const auth = getAuth();
-  applyActionCode(auth, obbCode)
-    .then(() => {
-      return true;
-    })
-    .catch(() => {
-      return false;
-    });
+  try {
+    await confirmPasswordReset(auth, obbCode, newPassword);
+    console.log('Password Updated');
+    return true;
+  } catch (error) {
+    console.error('Password reset failed:', error);
+    return false;
+  }
 }

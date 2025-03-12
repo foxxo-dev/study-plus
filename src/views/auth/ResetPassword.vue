@@ -4,10 +4,16 @@
     <div class="icon_container">
       <i class="fa-solid fa-lock-open"></i>
     </div>
-    <h1>Reset your Passowrd.</h1>
+    <h1>
+      {{
+        isSuccess
+          ? 'You have successfully reset your password!'
+          : 'Reset your Passowrd.'
+      }}
+    </h1>
     <p>Check here to reset your passowrd.</p>
     <form>
-      <div class="input-wrapper">
+      <div class="input-wrapper" v-if="!isSuccess">
         <i class="fa-solid fa-lock"></i>
         <input
           :type="isPasswordHidden ? 'password' : 'text'"
@@ -21,7 +27,7 @@
         </span>
       </div>
       <hr />
-      <div class="input-wrapper">
+      <div class="input-wrapper" v-if="!isSuccess">
         <i class="fa-solid fa-lock"></i>
         <input
           :type="isRepeatPasswordHidden ? 'password' : 'text'"
@@ -29,16 +35,18 @@
           placeholder="Repeat Password"
           id="p" />
 
-        <span @click="togglePassword" class="password-toggle">
-          <EyeClosed v-if="isPasswordHidden" />
-          <EyeOpen v-else-if="!isPasswordHidden" />
+        <span @click="togglePassword2" class="password-toggle">
+          <EyeClosed v-if="isPasswordHidden2" />
+          <EyeOpen v-else-if="!isPasswordHidden2" />
         </span>
       </div>
 
       <span class="smol">{{
         'You may receive multiple emails or confirmations during this process.'
       }}</span>
-      <button @click.prevent="promptNormal">Update Password</button>
+      <button @click.prevent="promptNormal" :disabled="isSuccess">
+        Update Password
+      </button>
     </form>
   </main>
   <AiDisclamer />
@@ -62,9 +70,21 @@ export default {
       confirmedPassword: '',
       isPasswordHidden: true,
       isRepeatPasswordHidden: true,
+      isPasswordHidden2: true,
+      isSuccess: false,
     };
   },
+  components: {
+    EyeClosed,
+    EyeOpen,
+  },
   methods: {
+    togglePassword() {
+      this.isPasswordHidden = !this.isPasswordHidden;
+    },
+    togglePassword2() {
+      this.isPasswordHidden2 = !this.isPasswordHidden2;
+    },
     getParameterByName(name) {
       const url = window.location.href;
       name = name.replace(/[\[\]]/g, '\\$&');
@@ -75,9 +95,24 @@ export default {
       return decodeURIComponent(results[2].replace(/\+/g, ' '));
     },
     async promptNormal() {
+      if (this.password.length < 6) {
+        alert('Password must be at least 6 characters long.');
+        return;
+      }
       if (this.password === this.confirmedPassword) {
         console.log('Passwords match.');
-        await resetPassword(this.getParameterByName('oobCode'), this.password);
+        const code = await resetPassword(
+          this.getParameterByName('oobCode'),
+          this.password,
+        );
+        if (code == true) {
+          this.isSuccess = true;
+          setTimeout(() => {
+            this.$router.push('/login');
+          }, 10000);
+        } else {
+          alert('An error occured. Please try again. You may close this tab.');
+        }
       } else {
         alert('Passwords do not match.');
       }
