@@ -64,6 +64,17 @@ const router = createRouter({
       meta: { showPomodoro: false },
     },
     {
+      path: '/auth/resetpassword',
+      name: 'resetpassword',
+      component: () => import('@/views/auth/ResetPassword.vue'),
+      meta: { showPomodoro: false },
+    },
+    {
+      path: '/auth/resetpasswordemail',
+      name: 'resetpasswordemail',
+      component: () => import('@/views/auth/ResetPasswordEmail.vue'),
+    },
+    {
       path: '/auth/verificationRedirect',
       name: 'verificationRedirect',
       component: () => import('@/views/auth/VerificationRedirect.vue'),
@@ -97,8 +108,12 @@ const router = createRouter({
       name: 'apitest',
       component: () => import('@/views/APITest.vue'),
       meta: { showPomodoro: false },
-    }
-
+    },
+    {
+      path: '/privacypolicy',
+      name: 'privacypolicy',
+      component: () => import('@/views/PrivacyPolicy.vue'),
+    },
   ],
 });
 

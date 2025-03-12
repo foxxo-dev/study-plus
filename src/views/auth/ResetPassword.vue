@@ -2,17 +2,11 @@
   <img src="@/assets/img/sand.png" alt="background" id="bg" />
   <main>
     <div class="icon_container">
-      <i class="fa-solid fa-right-to-bracket"></i>
+      <i class="fa-solid fa-lock-open"></i>
     </div>
-    <h1>Sign in with email</h1>
-    <p>
-      Kickstart your learning journey easier than ever. All purely for free.
-    </p>
+    <h1>Reset your Passowrd.</h1>
+    <p>Check here to reset your passowrd.</p>
     <form>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-envelope"></i>
-        <input type="email" v-model="email" placeholder="Email" id="e" />
-      </div>
       <div class="input-wrapper">
         <i class="fa-solid fa-lock"></i>
         <input
@@ -26,30 +20,26 @@
           <EyeOpen v-else-if="!isPasswordHidden" />
         </span>
       </div>
-      <span
-        class="smol"
-        @click="() => this.$router.push('/auth/resetpasswordemail')"
-        :style="{ color: isError ? 'red' : 'black' }"
-        >{{ isError ? errorMessage : 'Forgot Password?' + '' }}</span
-      >
-      <button @click.prevent="promptNormal">Login</button>
+      <hr />
+      <div class="input-wrapper">
+        <i class="fa-solid fa-lock"></i>
+        <input
+          :type="isRepeatPasswordHidden ? 'password' : 'text'"
+          v-model="confirmedPassword"
+          placeholder="Repeat Password"
+          id="p" />
+
+        <span @click="togglePassword" class="password-toggle">
+          <EyeClosed v-if="isPasswordHidden" />
+          <EyeOpen v-else-if="!isPasswordHidden" />
+        </span>
+      </div>
+
+      <span class="smol">{{
+        'You may receive multiple emails or confirmations during this process.'
+      }}</span>
+      <button @click.prevent="promptNormal">Update Password</button>
     </form>
-    <div class="seperator">
-      <hr />
-      <span>Other Options</span>
-      <hr />
-    </div>
-    <div class="special_container">
-      <button @click="promptGoogle" class="special">
-        <i class="fa-brands fa-google"></i>
-      </button>
-      <button @click="promptGoogle" class="special" disabled>
-        <i class="fa-brands fa-facebook"></i>
-      </button>
-      <button @click="promptGoogle" class="special" disabled>
-        <i class="fa-brands fa-apple"></i>
-      </button>
-    </div>
   </main>
   <AiDisclamer />
   <TermsPopup
@@ -61,111 +51,35 @@
 </template>
 
 <script>
-import { signInWithEmail, signInWithGoogle } from '@/assets/js/firebase.js';
-import { mapActions, mapGetters } from 'vuex';
-import EyeOpen from '@/components/icons/EyeOpen.vue';
+import { resetPassword } from '@/assets/js/firebase';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
-import AiDisclamer from '@/components/AiDisclamer.vue';
-import TermsPopup from '@/components/TermsPopup.vue';
-import { loggedInNewUser } from '@/assets/js/loginLogger';
-
+import EyeOpen from '@/components/icons/EyeOpen.vue';
 export default {
+  name: 'ResetPassword',
   data() {
     return {
-      email: '',
       password: '',
+      confirmedPassword: '',
       isPasswordHidden: true,
-      isError: false,
-      errorMessage: null,
-      popup: false,
-      selectedType: null,
+      isRepeatPasswordHidden: true,
     };
   },
-  components: {
-    EyeOpen,
-    EyeClosed,
-    AiDisclamer,
-    TermsPopup,
-  },
-  beforeMount() {
-    this.user = null;
-  },
-  mounted() {
-    // check if the user is already logged in
-    if (this.user) {
-      this.$router.push('/dashboard/0');
-    }
-  },
   methods: {
-    popupOff() {
-      this.popup = false;
+    getParameterByName(name) {
+      const url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
     },
-    ...mapActions(['loginUser']),
-    ...mapGetters(['user']),
-
-    async logUserLogin() {
-      loggedInNewUser(Date.now(), this.selectedType);
-    },
-
-    async succesedLogin(user) {
-      this.logUserLogin();
-      this.loginUser(user); // Store user in Vuex
-      this.$router.push('/dashboard/0');
-    },
-
-    togglePassword() {
-      this.isPasswordHidden = !this.isPasswordHidden;
-      console.log('Password visibility toggled:', this.isPasswordHidden);
-    },
-
-    async promptGoogle() {
-      this.selectedType = 'google';
-      console.log('Prompting Google login', this.selectedType);
-      this.popup = true;
-    },
-
     async promptNormal() {
-      this.selectedType = 'normal';
-      console.log('Prompting Password login', this.selectedType);
-      this.popup = true;
-    },
-
-    async loginGoogle() {
-      this.popupOff();
-      try {
-        const user = await signInWithGoogle(
-          (user) => this.succesedLogin(user),
-          (error) => {
-            console.error('Failed to login:', error);
-            this.isError = true;
-            this.errorMessage = error;
-          },
-        );
-      } catch (error) {
-        console.error('Failed to login:', error);
-        this.isError = true;
-        this.errorMessage = error;
-        console.log(this.errorMessage);
-      }
-    },
-
-    async login() {
-      this.popupOff();
-      try {
-        const user = await signInWithEmail(
-          this.email,
-          this.password,
-          (user) => this.succesedLogin(user),
-          (error) => {
-            console.error('Failed to login:', error);
-            this.isError = true;
-            this.errorMessage = error;
-          },
-        );
-      } catch (error) {
-        console.error('Failed to login:', error);
-        this.isError = true;
-        this.errorMessage = error;
+      if (this.password === this.confirmedPassword) {
+        console.log('Passwords match.');
+        await resetPassword(this.getParameterByName('oobCode'), this.password);
+      } else {
+        alert('Passwords do not match.');
       }
     },
   },
@@ -263,6 +177,7 @@ hr {
   background-size: 5px 1px;
   background-repeat: repeat-x;
   opacity: 0.6;
+  margin-block: 0.2rem;
 }
 h1 {
   padding: 0;

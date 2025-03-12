@@ -10,6 +10,7 @@ import {
   sendEmailVerification,
   applyActionCode,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -472,4 +473,25 @@ export async function getPlayArea(uid, projectId) {
 export async function setPlayArea(uid, projectId, playArea) {
   const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
   await setDoc(projectDocRef, { playArea: playArea }, { merge: true });
+}
+
+export async function sendResetPassEmail(email) {
+  // we cannot access auth since we assume the user is logged out
+  const auth = getAuth();
+  await sendPasswordResetEmail(auth, email).catch((error) => {
+    console.error('Error sending password reset email:', error);
+    return false;
+  });
+  return true;
+}
+
+export async function resetPassword(obbCode, newPassword) {
+  const auth = getAuth();
+  applyActionCode(auth, obbCode)
+    .then(() => {
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
 }

@@ -2,177 +2,46 @@
   <img src="@/assets/img/sand.png" alt="background" id="bg" />
   <main>
     <div class="icon_container">
-      <i class="fa-solid fa-right-to-bracket"></i>
+      <i class="fa-solid fa-square-check"></i>
     </div>
-    <h1>Sign in with email</h1>
+    <h1>Reseting Password</h1>
     <p>
-      Kickstart your learning journey easier than ever. All purely for free.
+      We will send you a email to reset your password. Please follow the
+      instructions there.
     </p>
-    <form>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-envelope"></i>
-        <input type="email" v-model="email" placeholder="Email" id="e" />
-      </div>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-lock"></i>
-        <input
-          :type="isPasswordHidden ? 'password' : 'text'"
-          v-model="password"
-          placeholder="Password"
-          id="p" />
-
-        <span @click="togglePassword" class="password-toggle">
-          <EyeClosed v-if="isPasswordHidden" />
-          <EyeOpen v-else-if="!isPasswordHidden" />
-        </span>
-      </div>
-      <span
-        class="smol"
-        @click="() => this.$router.push('/auth/resetpasswordemail')"
-        :style="{ color: isError ? 'red' : 'black' }"
-        >{{ isError ? errorMessage : 'Forgot Password?' + '' }}</span
-      >
-      <button @click.prevent="promptNormal">Login</button>
-    </form>
-    <div class="seperator">
-      <hr />
-      <span>Other Options</span>
-      <hr />
-    </div>
-    <div class="special_container">
-      <button @click="promptGoogle" class="special">
-        <i class="fa-brands fa-google"></i>
-      </button>
-      <button @click="promptGoogle" class="special" disabled>
-        <i class="fa-brands fa-facebook"></i>
-      </button>
-      <button @click="promptGoogle" class="special" disabled>
-        <i class="fa-brands fa-apple"></i>
-      </button>
-    </div>
+    <input
+      type="email"
+      v-model="email"
+      placeholder="Email"
+      id="e"
+      v-if="showEmailField" />
+    <button @click.prevent="promptNormal">Send Reset Email</button>
   </main>
-  <AiDisclamer />
-  <TermsPopup
-    v-if="popup"
-    :normal="login"
-    :google="loginGoogle"
-    :selectedType="selectedType"
-    :no="popupOff" />
 </template>
 
-<script>
-import { signInWithEmail, signInWithGoogle } from '@/assets/js/firebase.js';
-import { mapActions, mapGetters } from 'vuex';
-import EyeOpen from '@/components/icons/EyeOpen.vue';
-import EyeClosed from '@/components/icons/EyeClosed.vue';
-import AiDisclamer from '@/components/AiDisclamer.vue';
-import TermsPopup from '@/components/TermsPopup.vue';
-import { loggedInNewUser } from '@/assets/js/loginLogger';
-
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      isPasswordHidden: true,
-      isError: false,
-      errorMessage: null,
-      popup: false,
-      selectedType: null,
-    };
-  },
-  components: {
-    EyeOpen,
-    EyeClosed,
-    AiDisclamer,
-    TermsPopup,
-  },
-  beforeMount() {
-    this.user = null;
-  },
-  mounted() {
-    // check if the user is already logged in
-    if (this.user) {
-      this.$router.push('/dashboard/0');
-    }
-  },
-  methods: {
-    popupOff() {
-      this.popup = false;
-    },
-    ...mapActions(['loginUser']),
-    ...mapGetters(['user']),
-
-    async logUserLogin() {
-      loggedInNewUser(Date.now(), this.selectedType);
-    },
-
-    async succesedLogin(user) {
-      this.logUserLogin();
-      this.loginUser(user); // Store user in Vuex
-      this.$router.push('/dashboard/0');
-    },
-
-    togglePassword() {
-      this.isPasswordHidden = !this.isPasswordHidden;
-      console.log('Password visibility toggled:', this.isPasswordHidden);
-    },
-
-    async promptGoogle() {
-      this.selectedType = 'google';
-      console.log('Prompting Google login', this.selectedType);
-      this.popup = true;
-    },
-
-    async promptNormal() {
-      this.selectedType = 'normal';
-      console.log('Prompting Password login', this.selectedType);
-      this.popup = true;
-    },
-
-    async loginGoogle() {
-      this.popupOff();
-      try {
-        const user = await signInWithGoogle(
-          (user) => this.succesedLogin(user),
-          (error) => {
-            console.error('Failed to login:', error);
-            this.isError = true;
-            this.errorMessage = error;
-          },
-        );
-      } catch (error) {
-        console.error('Failed to login:', error);
-        this.isError = true;
-        this.errorMessage = error;
-        console.log(this.errorMessage);
-      }
-    },
-
-    async login() {
-      this.popupOff();
-      try {
-        const user = await signInWithEmail(
-          this.email,
-          this.password,
-          (user) => this.succesedLogin(user),
-          (error) => {
-            console.error('Failed to login:', error);
-            this.isError = true;
-            this.errorMessage = error;
-          },
-        );
-      } catch (error) {
-        console.error('Failed to login:', error);
-        this.isError = true;
-        this.errorMessage = error;
-      }
-    },
-  },
-};
-</script>
-
 <style scoped>
+a {
+  all: unset;
+  border: none;
+  outline: none;
+  width: 100%;
+  background: rgba(92, 8, 226, 0.3);
+  cursor: pointer;
+  padding-inline: 0.5rem;
+  padding-block: 0.5rem;
+  border-radius: 0.5rem;
+  height: 2.25rem;
+  font-family: 'GlacialIndifference', sans-serif;
+  font-size: 1rem;
+  color: white;
+  -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
 #bg {
   position: fixed;
   top: 0;
@@ -382,3 +251,27 @@ button {
   height: 100% !important;
 }
 </style>
+
+<script>
+import { sendResetPassEmail } from '@/assets/js/firebase';
+export default {
+  name: 'ResetPasswordEmail',
+  data() {
+    return {
+      title: 'The email is currently being sent...',
+      email: '',
+      showEmailField: true,
+    };
+  },
+  methods: {
+    async promptNormal() {
+      const code = await sendResetPassEmail(this.email);
+      if (code == true) {
+        this.title = 'Your email has been sent. Please check your inbox.';
+        this.showEmailField = false;
+        this.email = '';
+      }
+    },
+  },
+};
+</script>
