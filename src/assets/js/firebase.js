@@ -12,7 +12,9 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
   confirmPasswordReset,
+  onAuthStateChanged,
 } from 'firebase/auth';
+
 import {
   getFirestore,
   collection,
@@ -38,8 +40,6 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
-
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export function _getUser() {
   const auth = getAuth();
