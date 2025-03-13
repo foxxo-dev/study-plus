@@ -9,7 +9,6 @@ import {
   updateProfile,
   sendEmailVerification,
   applyActionCode,
-  onAuthStateChanged,
   sendPasswordResetEmail,
   confirmPasswordReset,
   onAuthStateChanged,
