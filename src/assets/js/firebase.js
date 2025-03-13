@@ -39,20 +39,30 @@ const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
 
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 export function _getUser() {
   const auth = getAuth();
-  const user = auth.currentUser;
 
-  if (user) {
-    localStorage.setItem('user', JSON.stringify(user));
-    // auth is already updated
-    return user;
-  } else {
-    const storedUser = localStorage.getItem('user');
-    // update auth to have the stored user
-    auth.currentUser = storedUser ? JSON.parse(storedUser) : null;
-    return storedUser ? JSON.parse(storedUser) : null;
-  }
+  // Using the onAuthStateChanged listener to properly manage the user state
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // If user is logged in, persist the user in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        resolve(user);
+      } else {
+        // If no user is logged in, attempt to get from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          resolve(JSON.parse(storedUser));
+        } else {
+          resolve(null);
+          reject('No user found');
+        }
+      }
+    });
+  });
 }
 
 const auth = getAuth();
