@@ -1,13 +1,24 @@
 <template v-if="user && user.email">
-  <img :src="backgroundImage" alt="background" id="bg" @load="fadeIn" />
+  <img
+    :src="backgroundImage || 'https://unsplash.it/1920/1080'"
+    alt="background"
+    id="bg"
+    @load="fadeIn" />
   <div
     class="background_loading"
     id="bgl"
     :style="{ background: averageColor }"></div>
-  <NavbarDash :photoUrl="user.photoURL ? user.photoURL : null" />
+  <NavbarDash
+    :photoUrl="
+      user
+        ? user.photoURL || 'https://unsplash.it/100'
+        : 'https://unsplash.it/100'
+    " />
   <SurveyPopup v-if="isSurveyPopup" />
   <main>
-    <h1>Welcome, {{ user.displayName || user.email }}!</h1>
+    <h1>
+      Welcome, {{ user ? user.displayName || user.email : 'Loading...' }}!
+    </h1>
     <div id="content">
       <div id="projects">
         <div id="project-list">
@@ -90,7 +101,15 @@ export default {
     NavbarDash,
     SurveyPopup,
   },
+  beforeMount() {
+    this.$store.dispatch('fetchUser');
+    console.log('user: ', this.$store.dispatch('fetchUser'));
+  },
   mounted() {
+    // if (this.user.uid === 'Loading...') {
+    //   // this.$router.push('/login');
+    //   return;
+    // }
     if (!this.$route.params.projectId) {
       // navigate to the new project page
       document.cookie = '_survey_popup=true; max-age=1814400';
@@ -118,7 +137,7 @@ export default {
     async updateUser() {
       if (!this.user) {
         console.assert(this.user, 'User not found');
-        this.$router.push('/login');
+        // this.$router.push('/login');
         return;
       }
       console.log('User:', this.user, 'UID:', this.user.uid);

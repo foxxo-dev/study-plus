@@ -12,6 +12,8 @@ import {
   sendPasswordResetEmail,
   confirmPasswordReset,
   onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
 } from 'firebase/auth';
 
 import {
@@ -40,32 +42,37 @@ const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
 
-export function _getUser(callback) {
+const ___auth = getAuth();
+setPersistence(___auth, browserLocalPersistence) // This ensures the session persists in localStorage
+  .catch((error) => {
+    console.error('Error setting persistence:', error);
+  });
+
+export function _getUser() {
   const auth = getAuth();
-
-  // Debugging: Log when auth state changes
-  console.log('Waiting for auth state change...');
-
-  onAuthStateChanged(auth, (user) => {
-    if (user && user.uid) {
-      console.log('User object found:', user);
-      // If user has a valid UID, store in localStorage and pass to callback
-      localStorage.setItem('user', JSON.stringify(user));
-      callback(null, user); // Pass user to callback (no error)
-    } else {
-      console.log('No user logged in or UID missing');
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser && parsedUser.uid) {
-          callback(null, parsedUser); // Pass stored user to callback
-        } else {
-          callback(new Error('Stored user is missing UID'));
-        }
+  return new Promise((resolve, reject) => {
+    // Listen for auth state changes
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        console.log('User object found:', user);
+        // Store the user in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        resolve(user); // Return the user object
       } else {
-        callback(new Error('No user found in localStorage'));
+        // If no user is logged in, attempt to load from localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser && parsedUser.uid) {
+            resolve(parsedUser); // Return the stored user if it exists
+          } else {
+            reject(new Error('Stored user is missing UID'));
+          }
+        } else {
+          reject(new Error('No user found in localStorage'));
+        }
       }
-    }
+    });
   });
 }
 
@@ -77,6 +84,12 @@ onAuthStateChanged(auth, (user) => {
     localStorage.removeItem('user');
   }
 });
+
+export function logOutUser() {
+  // remove the users percistance data
+  localStorage.removeItem('user');
+  const auth = getAuth();
+}
 
 export function getUserUID() {
   const user = getUser();

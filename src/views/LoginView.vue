@@ -88,10 +88,11 @@ export default {
     TermsPopup,
   },
   beforeMount() {
-    this.user = null;
+    this.$store.dispatch('fetchUser');
   },
   mounted() {
     // check if the user is already logged in
+
     if (this.user) {
       this.$router.push('/dashboard/0');
     }
