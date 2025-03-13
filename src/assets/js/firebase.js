@@ -40,27 +40,32 @@ const db = getFirestore(app);
 
 export { analytics as firebaseAnalytics, app as firebaseApp };
 
-export function _getUser() {
+export function _getUser(callback) {
   const auth = getAuth();
 
-  // Using the onAuthStateChanged listener to properly manage the user state
-  return new Promise((resolve, reject) => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // If user is logged in, persist the user in localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        resolve(user);
-      } else {
-        // If no user is logged in, attempt to get from localStorage
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          resolve(JSON.parse(storedUser));
+  // Debugging: Log when auth state changes
+  console.log('Waiting for auth state change...');
+
+  onAuthStateChanged(auth, (user) => {
+    if (user && user.uid) {
+      console.log('User object found:', user);
+      // If user has a valid UID, store in localStorage and pass to callback
+      localStorage.setItem('user', JSON.stringify(user));
+      callback(null, user); // Pass user to callback (no error)
+    } else {
+      console.log('No user logged in or UID missing');
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && parsedUser.uid) {
+          callback(null, parsedUser); // Pass stored user to callback
         } else {
-          resolve(null);
-          reject('No user found');
+          callback(new Error('Stored user is missing UID'));
         }
+      } else {
+        callback(new Error('No user found in localStorage'));
       }
-    });
+    }
   });
 }
 
@@ -370,10 +375,22 @@ export async function changeUserPfP(uid, file) {
 }
 
 export async function getUserPfp(uid) {
+  console.log('UID passed to getUserPfp:', uid); // Add a log here
+
+  if (!uid) {
+    console.error('Invalid UID:', uid);
+    return null;
+  }
+
   const userDocRef = doc(db, 'userSettings', uid);
   const userDoc = await getDoc(userDocRef);
 
-  return userDoc.exists() ? userDoc.data().photoURL : null;
+  if (userDoc.exists()) {
+    return userDoc.data().photoURL;
+  } else {
+    console.warn(`User document with UID ${uid} not found`);
+    return null;
+  }
 }
 
 export async function getUserFlashCards(uid, projectId) {

@@ -116,7 +116,12 @@ export default {
       bg.style.opacity = 1;
     },
     async updateUser() {
-      // if (!this.user) return;
+      if (!this.user) {
+        console.assert(this.user, 'User not found');
+        this.$router.push('/login');
+        return;
+      }
+      console.log('User:', this.user, 'UID:', this.user.uid);
       const userPfp = await getUserPfp(this.user.uid);
       this.user.photoURL = userPfp || null;
       this.averageColor = await getAverageColor(this.user.uid);
