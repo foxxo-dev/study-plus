@@ -45,9 +45,12 @@ export function _getUser() {
 
   if (user) {
     localStorage.setItem('user', JSON.stringify(user));
+    // auth is already updated
     return user;
   } else {
     const storedUser = localStorage.getItem('user');
+    // update auth to have the stored user
+    auth.currentUser = storedUser ? JSON.parse(storedUser) : null;
     return storedUser ? JSON.parse(storedUser) : null;
   }
 }
