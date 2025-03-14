@@ -104,8 +104,10 @@ export default {
   beforeMount() {
     this.$store.dispatch('fetchUser');
     console.log('user: ', this.$store.dispatch('fetchUser'));
+    console.log(this.user);
   },
-  mounted() {
+  async mounted() {
+    this.$store.dispatch('fetchUser');
     // if (this.user.uid === 'Loading...') {
     //   // this.$router.push('/login');
     //   return;
@@ -116,7 +118,7 @@ export default {
       this.$router.push('/dashboard/new/0');
     }
     this.setupSurveyPopup();
-    this.updateUser();
+    await this.updateUser();
     this.setupIntersectionObserver();
     this.setupProximityCheck();
   },

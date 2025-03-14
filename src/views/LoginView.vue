@@ -93,9 +93,9 @@ export default {
   mounted() {
     // check if the user is already logged in
 
-    if (this.user) {
-      this.$router.push('/dashboard/0');
-    }
+    // if (this.user) {
+    //   this.$router.push('/dashboard/0');
+    // }
   },
   methods: {
     popupOff() {
