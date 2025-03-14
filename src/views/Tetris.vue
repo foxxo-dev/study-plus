@@ -117,7 +117,7 @@ import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
 export default {
   components: {
-    AiDisclamer
+    AiDisclamer,
   },
   data() {
     return {
@@ -278,7 +278,7 @@ export default {
     async createQuestions() {
       const project = await getProject(this.user.uid, this.projectId);
       console.log(project);
-      const { question } = await generate4AnswerQuestion(
+      const response = await generate4AnswerQuestion(
         project.fileData || 'No Data',
         project.documentType || 'unkown',
         project.title || 'Untitled',
@@ -289,6 +289,10 @@ export default {
           project.extraPrompt || '(no extra prompt)'
         }`,
       );
+
+      const question = response.question;
+
+      console.log(response);
 
       console.log(question);
 
