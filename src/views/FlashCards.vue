@@ -2,11 +2,7 @@
   <img :src="backgroundImage" alt="background" id="bg" @load="fadeIn" />
   <div
     class="background_loading"
-<<<<<<< HEAD
-    id="bgl"
-=======
     :class="{ visible: isBgLoaded }"
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     :style="{ background: averageColor }"></div>
 
   <nav>
@@ -43,11 +39,7 @@
   <div id="cards_container">
     <div class="card" v-if="flashCardData.length === 0" @click="generateCards">
       <div class="card_inner">
-<<<<<<< HEAD
-        <p>{{ generating ? 'Please Wait...' : 'Click To Generate Cards' }}</p>
-=======
         <p>{{ message }}</p>
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
         <p class="small_hint">
           You understand that AI may generate incorrect or false information.
         </p>
@@ -194,10 +186,6 @@
 
 <script>
 import {
-<<<<<<< HEAD
-  getAverageColor,
-=======
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
   getUsersBackground,
   getUserFlashCards,
   setUserFlashCards,
@@ -210,68 +198,28 @@ import {
 import { getChatGPTFlashcards } from '@/assets/js/openai';
 import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
-<<<<<<< HEAD
-=======
 import { getAverageBgColor } from '@/assets/js/cookiesHandler';
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
 export default {
   data() {
     return {
-<<<<<<< HEAD
-=======
       isBgLoaded: false,
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       backgroundImage: null,
       averageColor: '#000000',
       cardFlipped: false,
       currentCardIndex: 0,
       pageAmount: 0,
-<<<<<<< HEAD
-      flashCardData: [
-        { q: '1', a: 'yep' },
-        { q: '2', a: 'yep' },
-        { q: '3', a: 'yep' },
-        { q: '4', a: 'yep' },
-        { q: '5', a: 'yep' },
-        { q: '6', a: 'yep' },
-        { q: '7', a: 'yep' },
-        { q: '8', a: 'yep' },
-        { q: '9', a: 'yep' },
-      ],
-      generating: false,
-      regenerations: 4,
-      percentageViewed: 0,
-=======
       flashCardData: [],
       generating: false,
       regenerations: 4,
       percentageViewed: 0,
       message: this.generating ? 'Please Wait...' : 'Click To Generate Cards',
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     };
   },
   components: {
     AiDisclamer,
   },
   async mounted() {
-<<<<<<< HEAD
-    console.log(this.flashCardData.length);
-    const length = this.flashCardData.length;
-    this.pageAmount = Math.round(length / 6);
-    if (this.user?.uid) {
-      this.averageColor = await getAverageColor(this.user.uid);
-      this.flashCardData =
-        (await getUserFlashCards(
-          this.user.uid,
-          this.$route.params.projectId,
-        )) || [];
-      this.regenerations = await getRegenerations(this.user.uid);
-      this.backgroundImage = await getUsersBackground(this.user.uid);
-      document.getElementById('bgl').style.opacity = 1;
-      this.fadeIn();
-    }
-=======
     this.averageColor = await getAverageBgColor();
     this.isBgLoaded = true;
     // Wrap all DOM modifications in the guard:
@@ -299,7 +247,6 @@ export default {
     document.getElementById('bgl').style.opacity = 1;
     this.fadeIn();
 
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     window.addEventListener('keydown', this.handleKeydown);
   },
   beforeUnmount() {
@@ -392,20 +339,6 @@ export default {
         this.user.uid,
         this.$route.params.projectId,
       );
-<<<<<<< HEAD
-      console.log(project);
-      const flash = await getChatGPTFlashcards(
-        project.fileData || 'No Data',
-        project.documentType || 'unkown',
-        project.title || 'Untitled',
-        project.description || '',
-        `Have this mood: ${
-          project.AI_Theme || 'Be a helpful AI assistant'
-        }, and this is what the user wrote: ${
-          project.extraPrompt || '(no extra prompt)'
-        }`,
-      );
-=======
       let flash;
       console.log(project);
       try {
@@ -423,7 +356,6 @@ export default {
       } catch {
         this.message = 'Failed to generate flashcards.';
       }
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       this.flashCardData = flash?.flashcards || [];
       this.generating = false;
       this.percentageViewed = 0;
@@ -440,8 +372,6 @@ export default {
   computed: {
     ...mapGetters(['user']),
   },
-<<<<<<< HEAD
-=======
   watch: {
     generating: {
       handler(generating) {
@@ -453,7 +383,6 @@ export default {
       },
     },
   },
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 };
 </script>
 
@@ -593,14 +522,10 @@ button {
   width: 100%;
   height: 100%;
   opacity: 0;
-<<<<<<< HEAD
-  transition: opacity 0.5s;
-=======
   /* transition: opacity 0.5s; */
 }
 .background_loading.visible {
   opacity: 1;
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 }
 .flippableCard {
   perspective: 1px;

@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { logOutUser } from '@/assets/js/firebase';
+
 export default {
   props: {
     photoUrl: {

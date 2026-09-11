@@ -93,7 +93,7 @@ onAuthStateChanged(auth, (user) => {
 export function logOutUser() {
   // remove the users percistance data
   localStorage.removeItem('user');
-  const auth = getAuth();
+  
 }
 
 export function getUserUID() {

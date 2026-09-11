@@ -2,11 +2,7 @@
   <img :src="backgroundImage" alt="background" id="bg" />
   <div
     class="background_loading"
-<<<<<<< HEAD
-    id="bgl"
-=======
     :class="{ visible: isBgLoaded }"
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     :style="{ background: averageColor }"></div>
   <nav>
     <router-link
@@ -69,15 +65,9 @@ import {
   updateUserProfileName,
   changeUserPfP,
   getUsersBackground,
-<<<<<<< HEAD
-  getAverageColor,
-} from '@/assets/js/firebase';
-import { mapGetters } from 'vuex';
-=======
 } from '@/assets/js/firebase';
 import { mapGetters } from 'vuex';
 import { getAverageBgColor } from '@/assets/js/cookiesHandler';
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
 export default {
   data() {
@@ -90,10 +80,7 @@ export default {
       bgName: 'Background Image',
       pfpName: 'User Image',
       userDisplayName: '',
-<<<<<<< HEAD
-=======
       isBgLoaded: false,
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       userPfp: '',
       updatedBackground: false,
       updatedPfp: false,
@@ -104,13 +91,6 @@ export default {
     ...mapGetters(['user']),
   },
   async mounted() {
-<<<<<<< HEAD
-    if (this.user?.uid) {
-      this.averageColor = await getAverageColor(this.user.uid);
-      document.getElementById('bgl').style.opacity = 1;
-      this.fadeIn();
-      document.getElementById('bgl').style.opacity = 1;
-=======
     this.averageColor = await getAverageBgColor();
     this.isBgLoaded = true;
     // Wrap all DOM modifications in the guard:
@@ -124,7 +104,6 @@ export default {
       this.averageColor = await getAverageBgColor();
       document.getElementById('bg').style.opacity = 1;
       this.fadeIn();
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
       this.backgroundImage =
         (await getUsersBackground(this.user.uid)) || bookBg;
@@ -206,13 +185,9 @@ export default {
     },
     updateSelectedBackground() {
       // Reset all selected backgrounds
-<<<<<<< HEAD
-      document.getElementById('custom').classList.remove('selected');
-=======
       if (document.getElementById('custom')) {
         document.getElementById('custom').classList.remove('selected');
       }
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       document.getElementById('book').classList.remove('selected');
       document.getElementById('sand').classList.remove('selected');
 
@@ -329,12 +304,9 @@ h3 {
   opacity: 0;
   transition: opacity 0.5s;
 }
-<<<<<<< HEAD
-=======
 .background_loading.visible {
   opacity: 1;
 }
->>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 nav > a {
   font-family: 'League Spartan', serif;
   font-size: 1.3rem;

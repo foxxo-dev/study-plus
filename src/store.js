@@ -9,23 +9,24 @@ export const store = createStore({
     setUser(state, user) {
       state.user = user;
     },
+    setUserPhoto(state, photoURL) {
+      if (state.user) {
+        state.user.photoURL = photoURL;
+      }
+    },
   },
   actions: {
     async fetchUser({ commit }) {
       console.log('Creating Promise');
       try {
-        // Czekamy na wynik z funkcji _getUser(), która zwraca Promise
         const user = await _getUser();
-
         console.log('Found user!', user);
         commit('setUser', user);
-        console.log('Resolving Promise');
         return user;
       } catch (error) {
-        // Tutaj trafią wszystkie reject() oraz błędy z _getUser()
         console.error('Error fetching user:', error);
         commit('setUser', null);
-        return null; // Zwracamy null zamiast rzucać błąd, tak jak w oryginalnym kodzie
+        return null;
       }
     },
 
@@ -34,6 +35,6 @@ export const store = createStore({
     },
   },
   getters: {
-    user: (state) => state.user, // Simply return the user state
+    user: (state) => state.user,
   },
 });

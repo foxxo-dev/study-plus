@@ -196,33 +196,48 @@ export default {
       if (bg) bg.style.opacity = 1;
     },
     async updateUser() {
-      if (!this.user || !this.user.uid) return;
+      if (!this.user?.uid) return;
 
       try {
         console.log('User:', this.user, 'UID:', this.user.uid);
-        const userPfp = await getUserPfp(this.user.uid);
-        this.user.photoURL = userPfp || null;
-        this.projects = await getProjectsList(this.user.uid);
 
-        this.currentProject = this.projects.find(
-          (project) => project.id === this.$route.params.projectId,
-        ) || { id: 0, name: 'Project not found' };
+        // Fetch profile picture and projects concurrently to speed up loading
+        const [userPfp, projectsList] = await Promise.all([
+          getUserPfp(this.user.uid),
+          getProjectsList(this.user.uid),
+        ]);
 
-        this.progress = 0;
+        // Commit a mutation instead of directly mutating Vuex state
+        if (userPfp) {
+          this.$store.commit('setUserPhoto', userPfp);
+        }
 
-        if (this.projects.length <= 0) {
+        this.projects = projectsList || [];
+
+        // Redirect immediately if no projects exist before calculating route details
+        if (this.projects.length === 0) {
+          this.progress = 0;
           this.$router.push('/dashboard/new/0');
           return;
         }
 
-        this.progress = await getPercentage(
-          this.user.uid,
-          this.currentProject.id,
+        // Match route project ID safely
+        const foundProject = this.projects.find(
+          (project) => project.id === this.$route.params.projectId,
         );
 
-        if (this.user.displayName === 'Jan Wodospad') {
-          this.janWodospad = true;
+        if (foundProject) {
+          this.currentProject = foundProject;
+          this.progress = await getPercentage(
+            this.user.uid,
+            this.currentProject.id,
+          );
+        } else {
+          this.currentProject = { id: 0, name: 'Project not found' };
+          this.progress = 0;
         }
+
+        this.janWodospad = this.user.displayName === 'Jan Wodospad';
       } catch (error) {
         console.error('Error updating user data:', error);
       }
