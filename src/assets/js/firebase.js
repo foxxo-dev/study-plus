@@ -26,6 +26,8 @@ import {
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
+import { getAverageBgColor, setNewAverageBgColor } from './cookiesHandler';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyAF-Fk00jDHYI7ZnwF9V3pGnh0-Pvvykyo',
   authDomain: 'study-plus-app-foxxo-dev.firebaseapp.com',
@@ -50,26 +52,28 @@ setPersistence(___auth, browserLocalPersistence) // This ensures the session per
 
 export function _getUser() {
   const auth = getAuth();
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     // Listen for auth state changes
     onAuthStateChanged(auth, (user) => {
       if (user && user.uid) {
         console.log('User object found:', user);
-        // Store the user in localStorage
         localStorage.setItem('user', JSON.stringify(user));
-        resolve(user); // Return the user object
+        resolve(user);
       } else {
-        // If no user is logged in, attempt to load from localStorage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          if (parsedUser && parsedUser.uid) {
-            resolve(parsedUser); // Return the stored user if it exists
-          } else {
-            reject(new Error('Stored user is missing UID'));
+          try {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser && parsedUser.uid) {
+              resolve(parsedUser);
+            } else {
+              resolve(null); // Brak UID = brak użytkownika
+            }
+          } catch (e) {
+            resolve(null); // Błąd parsowania = brak użytkownika
           }
         } else {
-          reject(new Error('No user found in localStorage'));
+          resolve(null); // Brak użytkownika w bazie i w pamięci podręcznej
         }
       }
     });
@@ -282,8 +286,10 @@ export async function changeUserBackground(uid, backgroundImage) {
   const userDocRef = doc(db, 'userSettings', uid);
   const uri = await getFileURI(backgroundImage); // Compress image
 
-  // Calculate average background color
-  const averageBackgroundColor = await getAverageColorFromImage(uri);
+  console.log('Setting new bg');
+  const averageBackgroundColor = await setNewAverageBgColor(uri);
+
+  console.log(averageBackgroundColor);
 
   await setDoc(
     userDocRef,
@@ -303,7 +309,7 @@ export async function changeUserBackgroundPath(uid, path) {
   }
 
   // Calculate average background color
-  const averageBackgroundColor = await getAverageColorFromImage(path);
+  const averageBackgroundColor = await setNewAverageBgColor(path);
 
   await setDoc(
     userDocRef,
@@ -314,58 +320,11 @@ export async function changeUserBackgroundPath(uid, path) {
   return userDoc.data().background;
 }
 
-async function getAverageColorFromImage(imageSrc) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = imageSrc;
-    img.crossOrigin = 'Anonymous';
-
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0, img.width, img.height);
-
-      const imageData = ctx.getImageData(0, 0, img.width, img.height);
-      const data = imageData.data;
-      let r = 0,
-        g = 0,
-        b = 0;
-
-      for (let i = 0; i < data.length; i += 4) {
-        r += data[i];
-        g += data[i + 1];
-        b += data[i + 2];
-      }
-
-      r = Math.floor(r / (data.length / 4));
-      g = Math.floor(g / (data.length / 4));
-      b = Math.floor(b / (data.length / 4));
-
-      resolve(`rgb(${r},${g},${b})`);
-    };
-
-    img.onerror = (error) => reject(error);
-  });
-}
-
 export async function updateUserProfileName(displayName) {
   const auth = getAuth();
   await updateProfile(auth.currentUser, {
     displayName: displayName,
   });
-}
-
-export async function getAverageColor(uid) {
-  const userDocRef = doc(db, 'userSettings', uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (!userDoc.exists()) {
-    return '#3f1487';
-  }
-
-  return userDoc.data().averageBackgroundColor;
 }
 
 export async function changeUserPfP(uid, file) {

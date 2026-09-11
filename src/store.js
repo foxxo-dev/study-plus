@@ -12,20 +12,23 @@ export const store = createStore({
   },
   actions: {
     async fetchUser({ commit }) {
+      console.log('Creating Promise');
       try {
-        // Wait for _getUser to resolve and fetch the user
-        _getUser((error, user) => {
-          if (error) {
-            console.error('Error fetching user:', error);
-            commit('setUser', null); // Set null if there is an error
-          } else {
-            commit('setUser', user); // Commit the user once fetched
-          }
-        });
+        // Czekamy na wynik z funkcji _getUser(), która zwraca Promise
+        const user = await _getUser();
+
+        console.log('Found user!', user);
+        commit('setUser', user);
+        console.log('Resolving Promise');
+        return user;
       } catch (error) {
-        console.error('Error in fetchUser action:', error);
+        // Tutaj trafią wszystkie reject() oraz błędy z _getUser()
+        console.error('Error fetching user:', error);
+        commit('setUser', null);
+        return null; // Zwracamy null zamiast rzucać błąd, tak jak w oryginalnym kodzie
       }
     },
+
     loginUser({ commit }, user) {
       commit('setUser', user);
     },

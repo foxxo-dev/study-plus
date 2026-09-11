@@ -6,7 +6,7 @@
     @load="fadeIn" />
   <div
     class="background_loading"
-    id="bgl"
+    :class="{ visible: isBgLoaded }"
     :style="{ background: averageColor }"></div>
   <NavbarDash
     :photoUrl="
@@ -15,7 +15,7 @@
         : 'https://unsplash.it/100'
     " />
   <SurveyPopup v-if="isSurveyPopup" />
-  <main>
+  <main @click="closeMenu">
     <h1>
       Welcome, {{ user ? user.displayName || user.email : 'Loading...' }}!
     </h1>
@@ -31,6 +31,21 @@
             :to="`/dashboard/${project.id}`">
             <div class="projectLink">
               <span>{{ project.name }}</span>
+              <span class="projectMenu">
+                <div
+                  @click.stop.prevent="toggleMenu(project.id)"
+                  class="projectToggle">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path
+                      d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z" />
+                  </svg>
+                </div>
+              </span>
+              <div v-show="menuOpen == project.id" class="editProjectDetails">
+                <button @click.stop.prevent="handleDelete(project.id)">
+                  Delete
+                </button>
+              </div>
             </div>
           </router-link>
         </div>
@@ -76,11 +91,13 @@ import defaultBackground from '@/assets/img/book-bg.png';
 import {
   getUsersBackground,
   getUserPfp,
-  getAverageColor,
   getProjectsList,
   getPercentage,
+  deleteProject,
 } from '@/assets/js/firebase';
+import { getAverageBgColor } from '@/assets/js/cookiesHandler';
 import SurveyPopup from '@/components/SurveyPopup.vue';
+import EditIcon from '@/components/icons/EditIcon.vue';
 
 export default {
   data() {
@@ -92,6 +109,8 @@ export default {
       progress: 0,
       janWodospad: false,
       isSurveyPopup: false,
+      isBgLoaded: false,
+      menuOpen: null,
     };
   },
   computed: {
@@ -101,29 +120,69 @@ export default {
     NavbarDash,
     SurveyPopup,
   },
-  beforeMount() {
-    this.$store.dispatch('fetchUser');
-    console.log('user: ', this.$store.dispatch('fetchUser'));
-    console.log(this.user);
-  },
   async mounted() {
-    this.$store.dispatch('fetchUser');
-    // if (this.user.uid === 'Loading...') {
-    //   // this.$router.push('/login');
-    //   return;
-    // }
+    this.averageColor = await getAverageBgColor();
+    this.isBgLoaded = true;
+    // Wrap all DOM modifications in the guard:
+    const bgl = document.getElementById('bgl');
+    if (bgl) {
+      bgl.style.opacity = 1;
+      bgl.style.transition = 'opacity 0.5s';
+    }
+
+    // Czekamy na załadowanie użytkownika w Vuex (jeśli fetchUser zwraca Promise)
+    await this.$store.dispatch('fetchUser');
+
+    this.checkIfSignedIn();
+
     if (!this.$route.params.projectId) {
-      // navigate to the new project page
       document.cookie = '_survey_popup=true; max-age=1814400';
       this.$router.push('/dashboard/new/0');
+      return;
     }
+
     this.setupSurveyPopup();
-    await this.updateUser();
+
+    // Jeśli użytkownik jest już w Vuex, aktualizujemy dane
+    if (this.user) {
+      await this.updateUser();
+    }
+
     this.setupIntersectionObserver();
     this.setupProximityCheck();
   },
-
   methods: {
+    async handleDelete(projectId) {
+      try {
+        await deleteProject(this.user.uid, projectId);
+        this.menuOpen = null;
+
+        // If the currently active project was deleted, route back to new/dashboard
+        if (this.$route.params.projectId === projectId) {
+          this.$router.push('/dashboard/new/0');
+        } else {
+          await this.updateUser();
+        }
+      } catch (error) {
+        console.error('Failed to delete project:', error);
+      }
+    },
+    closeMenu(event) {
+      if (
+        event.target.closest('.editProjectDetails button') ||
+        event.target.closest('.projectToggle')
+      ) {
+        return;
+      }
+      this.menuOpen = null;
+    },
+    toggleMenu(id) {
+      if (this.menuOpen != null) {
+        this.menuOpen = null;
+      } else {
+        this.menuOpen = id;
+      }
+    },
     setupSurveyPopup() {
       if (document.cookie.indexOf('_survey_popup') === -1) {
         document.cookie = '_survey_popup=true; max-age=1814400';
@@ -134,43 +193,39 @@ export default {
     },
     fadeIn() {
       const bg = document.getElementById('bg');
-      bg.style.opacity = 1;
+      if (bg) bg.style.opacity = 1;
     },
     async updateUser() {
-      if (!this.user) {
-        console.assert(this.user, 'User not found');
-        // this.$router.push('/login');
-        return;
+      if (!this.user || !this.user.uid) return;
+
+      try {
+        console.log('User:', this.user, 'UID:', this.user.uid);
+        const userPfp = await getUserPfp(this.user.uid);
+        this.user.photoURL = userPfp || null;
+        this.projects = await getProjectsList(this.user.uid);
+
+        this.currentProject = this.projects.find(
+          (project) => project.id === this.$route.params.projectId,
+        ) || { id: 0, name: 'Project not found' };
+
+        this.progress = 0;
+
+        if (this.projects.length <= 0) {
+          this.$router.push('/dashboard/new/0');
+          return;
+        }
+
+        this.progress = await getPercentage(
+          this.user.uid,
+          this.currentProject.id,
+        );
+
+        if (this.user.displayName === 'Jan Wodospad') {
+          this.janWodospad = true;
+        }
+      } catch (error) {
+        console.error('Error updating user data:', error);
       }
-      console.log('User:', this.user, 'UID:', this.user.uid);
-      const userPfp = await getUserPfp(this.user.uid);
-      this.user.photoURL = userPfp || null;
-      this.averageColor = await getAverageColor(this.user.uid);
-      this.projects = await getProjectsList(this.user.uid);
-      this.currentProject = this.projects.find(
-        (project) => project.id === this.$route.params.projectId,
-      );
-
-      this.progress = 0;
-
-      if (this.projects.length <= 0) {
-        this.$router.push('/dashboard/new/0');
-      }
-      console.log(this.averageColor);
-      document.getElementById('bgl').style.opacity = 1;
-      // console.log('fetched users pfp with the return of', userPfp);
-
-      this.progress = await getPercentage(
-        this.user.uid,
-        this.currentProject.id,
-      );
-      console.log(this.user.displayName);
-      if (this.user.displayName == 'Jan Wodospad') {
-        this.janWodospad = true;
-      }
-
-      console.log('percentage:', this.percentage);
-      console.log(this.currentProject.id);
     },
     async fetchBackground() {
       if (!this.user || !this.user.uid) return;
@@ -184,6 +239,7 @@ export default {
     },
     checkIfSignedIn() {
       if (!this.user || !this.user.email) {
+        console.log('No user found!', this.user);
         this.$router.push('/login');
       }
     },
@@ -198,7 +254,7 @@ export default {
         options,
       );
       const target = this.$refs.positionPomodoro;
-      observer.observe(target);
+      if (target) observer.observe(target);
     },
     handleIntersection(entries) {
       entries.forEach((entry) => {
@@ -210,7 +266,7 @@ export default {
       });
     },
     setupProximityCheck() {
-      this.checkProximity(); // Initial check
+      this.checkProximity();
       window.addEventListener('scroll', this.checkProximity);
       window.addEventListener('mousemove', this.checkProximity);
     },
@@ -241,9 +297,10 @@ export default {
   watch: {
     user: {
       immediate: true,
-      handler(newUser) {
+      async handler(newUser) {
         if (newUser && newUser.uid) {
-          this.fetchBackground();
+          await this.fetchBackground();
+          await this.updateUser(); // Bezpieczne odpalenie po wykryciu usera
         }
       },
     },
@@ -253,8 +310,10 @@ export default {
       },
     },
   },
-  beforeMount() {
-    this.checkIfSignedIn();
+  beforeDestroy() {
+    // Czyszczenie event listenerów zapobiegające wyciekom pamięci
+    window.removeEventListener('scroll', this.checkProximity);
+    window.removeEventListener('mousemove', this.checkProximity);
   },
 };
 </script>
@@ -297,11 +356,15 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: -2;
   width: 100%;
-  height: 100%;
+  height: 100vh; /* Added height */
+  z-index: -2;
   opacity: 0;
   transition: opacity 0.5s;
+}
+
+.background_loading.visible {
+  opacity: 1;
 }
 .premium {
   background: #fccb2baa !important;
@@ -399,9 +462,54 @@ h1 {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.projectLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.projectMenu {
+  height: 100%;
+  aspect-ratio: 1;
+  filter: invert(1);
+  opacity: 0.6;
+}
+
+.editProjectDetails {
+  position: absolute;
+  background: rgba(255, 0, 0, 0.556);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  color: #111;
+  z-index: 99999;
+  right: 1rem;
+  top: 1rem;
+  transform: translateY(100%);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  min-width: 5rem;
+  max-height: 3rem;
+}
+
+.editProjectDetails button {
+  all: unset;
+  color: white;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+}
+
 .project span {
   display: block;
-  width: 8rem;
+  max-width: 7rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

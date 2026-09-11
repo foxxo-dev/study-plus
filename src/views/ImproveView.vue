@@ -2,7 +2,11 @@
   <img :src="backgroundImage" alt="background" id="bg" />
   <div
     class="background_loading"
+<<<<<<< HEAD
     id="bgl"
+=======
+    :class="{ visible: isBgLoaded }"
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     :style="{ background: averageColor }"></div>
   <nav>
     <router-link
@@ -192,6 +196,12 @@ main {
   opacity: 0;
   transition: opacity 0.5s;
 }
+<<<<<<< HEAD
+=======
+.background_loading.visible {
+  opacity: 1;
+}
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 </style>
 <script>
 import {
@@ -199,7 +209,10 @@ import {
   getPDFURL,
   getProjectRating,
   setPDFURL,
+<<<<<<< HEAD
   getAverageColor,
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
   getUsersBackground,
   getRegenerations,
   setRegenerations,
@@ -209,9 +222,17 @@ import { initializeRecaptchaConfig } from 'firebase/auth';
 import { mapGetters } from 'vuex';
 import bookBg from '@/assets/img/book-bg.png';
 import AiDisclamer from '@/components/AiDisclamer.vue';
+<<<<<<< HEAD
 export default {
   data() {
     return {
+=======
+import { getAverageBgColor } from '@/assets/js/cookiesHandler';
+export default {
+  data() {
+    return {
+      isBgLoaded: false,
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       working: '',
       workingPreviewURL: '',
       rubric: '',
@@ -229,6 +250,7 @@ export default {
     AiDisclamer,
   },
   async mounted() {
+<<<<<<< HEAD
     this.averageColor = await getAverageColor(this.user.uid);
     document.getElementById('bgl').style.opacity = 1;
     this.fadeIn();
@@ -236,6 +258,20 @@ export default {
 
     this.backgroundImage = (await getUsersBackground(this.user.uid)) || bookBg;
 
+=======
+    this.averageColor = await getAverageBgColor();
+    this.isBgLoaded = true;
+    // Wrap all DOM modifications in the guard:
+    const bgl = document.getElementById('bgl');
+    if (bgl) {
+      bgl.style.opacity = 1;
+      bgl.style.transition = 'opacity 0.5s';
+    }
+    this.backgroundImage = (await getUsersBackground(this.user.uid)) || bookBg;
+
+    this.fadeIn();
+
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     getPDFURL(this.user.uid, this.$route.params.projectId).then((url) => {
       if (!url) return;
       this.workingPreviewURL = url; // Use the Blob URL directly
@@ -260,7 +296,10 @@ export default {
   methods: {
     fadeIn() {
       document.getElementById('bg').style.opacity = 1;
+<<<<<<< HEAD
       document.getElementById('bgl').style.opacity = 1;
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     },
     goBack() {
       this.$router.push('/dashboard/' + this.$route.params.projectId);

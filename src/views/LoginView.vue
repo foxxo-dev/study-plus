@@ -32,6 +32,14 @@
         :style="{ color: isError ? 'red' : 'black' }"
         >{{ isError ? errorMessage : 'Forgot Password?' + '' }}</span
       >
+<<<<<<< HEAD
+=======
+      <div class="terms">
+        <a href="/terms" target="_blank">Do you agree to the terms?</a>
+        <input type="checkbox" v-model="agreed" value="normal" />
+      </div>
+
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       <button @click.prevent="promptNormal">Login</button>
     </form>
     <div class="seperator">
@@ -52,12 +60,15 @@
     </div>
   </main>
   <AiDisclamer />
+<<<<<<< HEAD
   <TermsPopup
     v-if="popup"
     :normal="login"
     :google="loginGoogle"
     :selectedType="selectedType"
     :no="popupOff" />
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 </template>
 
 <script>
@@ -66,8 +77,11 @@ import { mapActions, mapGetters } from 'vuex';
 import EyeOpen from '@/components/icons/EyeOpen.vue';
 import EyeClosed from '@/components/icons/EyeClosed.vue';
 import AiDisclamer from '@/components/AiDisclamer.vue';
+<<<<<<< HEAD
 import TermsPopup from '@/components/TermsPopup.vue';
 import { loggedInNewUser } from '@/assets/js/loginLogger';
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
 export default {
   data() {
@@ -77,22 +91,32 @@ export default {
       isPasswordHidden: true,
       isError: false,
       errorMessage: null,
+<<<<<<< HEAD
       popup: false,
       selectedType: null,
+=======
+      agreed: false,
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     };
   },
   components: {
     EyeOpen,
     EyeClosed,
     AiDisclamer,
+<<<<<<< HEAD
     TermsPopup,
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
   },
   beforeMount() {
     this.$store.dispatch('fetchUser');
   },
   mounted() {
     // check if the user is already logged in
+<<<<<<< HEAD
 
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     // if (this.user) {
     //   this.$router.push('/dashboard/0');
     // }
@@ -104,12 +128,16 @@ export default {
     ...mapActions(['loginUser']),
     ...mapGetters(['user']),
 
+<<<<<<< HEAD
     async logUserLogin() {
       loggedInNewUser(Date.now(), this.selectedType);
     },
 
     async succesedLogin(user) {
       this.logUserLogin();
+=======
+    async succesedLogin(user) {
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       this.loginUser(user); // Store user in Vuex
       this.$router.push('/dashboard/0');
     },
@@ -120,6 +148,7 @@ export default {
     },
 
     async promptGoogle() {
+<<<<<<< HEAD
       this.selectedType = 'google';
       console.log('Prompting Google login', this.selectedType);
       this.popup = true;
@@ -129,6 +158,25 @@ export default {
       this.selectedType = 'normal';
       console.log('Prompting Password login', this.selectedType);
       this.popup = true;
+=======
+      if (this.agreed) {
+        console.log('Prompting Google login', this.selectedType);
+        this.loginGoogle();
+      } else {
+        this.isError = true;
+        this.errorMessage = 'Please accept the terms and conditions.';
+      }
+    },
+
+    async promptNormal() {
+      if (this.agreed) {
+        console.log('Prompting Password login', this.selectedType);
+        this.login();
+      } else {
+        this.isError = true;
+        this.errorMessage = 'Please accept the terms and conditions.';
+      }
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     },
 
     async loginGoogle() {
@@ -170,6 +218,16 @@ export default {
       }
     },
   },
+<<<<<<< HEAD
+=======
+  watch: {
+    errorMessage: {
+      handler(newValue) {
+        alert('Error: ' + newValue);
+      },
+    },
+  },
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 };
 </script>
 
@@ -210,6 +268,26 @@ main {
   font-size: 0.7rem;
   opacity: 0.6;
 }
+<<<<<<< HEAD
+=======
+
+.terms {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terms a {
+  color: white;
+}
+
+.terms input {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 .icon_container {
   width: 5rem;
   aspect-ratio: 1;

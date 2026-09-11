@@ -35,26 +35,6 @@ async function signUpNewUser(time, method) {
   await sendDiscordWebhook(message);
 }
 
-async function loggedInNewUser(time, method) {
-  const discordTimestamp = `<t:${Math.floor(time / 1000)}:F>`;
 
-  const ipAddress = await fetch('https://api.ipify.org?format=json')
-    .then((response) => response.json())
-    .then((data) => data.ip)
-    .catch((error) => {
-      console.error('Error fetching IP address:', error);
-      return 'unknown';
-    });
-
-  const loginMessage = `User signed in at ${discordTimestamp} using ${method} method from IP address ${ipAddress}`;
-
-  await sendDiscordWebhook(loginMessage);
-
-  const statsMessage =
-    '-# To be replaced with Google Statistics - Location of user is: ' +
-    ipAddress;
-
-  await sendDiscordWebhook(statsMessage);
-}
 
 export { signUpNewUser, loggedInNewUser };

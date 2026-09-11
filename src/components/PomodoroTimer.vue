@@ -15,7 +15,15 @@
     @mousemove="onDrag">
     <CircleProgress :value="100 - percentage" :valueText="timeRemaining" />
     <div class="button_container">
-      <button class="green" @click="startTimer">Start</button>
+      <button
+        @click="startTimer"
+        :style="
+          isRunning
+            ? { background: 'hsla(50, 100%, 80%, 0.4)' }
+            : { background: 'hsla(122, 100%, 50%, 0.4)' }
+        ">
+        {{ isRunning ? 'Pause' : 'Start' }}
+      </button>
       <button class="red" @click="stopTimer">Reset</button>
     </div>
   </div>
@@ -27,8 +35,9 @@ import CircleProgress from './CircleProgress.vue';
 export default {
   data() {
     return {
+      isRunning: false,
       isMinimized: false,
-      position: { left: 352.219, top: 672.75 }, // Initial position
+      position: { left: 352.219, top: 672.75 },
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
       percentage: 0,
@@ -74,10 +83,13 @@ export default {
       }
     },
     startDrag(event) {
+      if (!this.isMinimized && event.target.closest('button')) {
+        return;
+      }
       this.isDragging = true;
       this.dragOffset.x = event.clientX - this.position.left;
       this.dragOffset.y = event.clientY - this.position.top;
-      this.isMinimized = true; // Always minimized while dragging
+      this.isMinimized = true;
     },
     onDrag(event) {
       if (!this.isDragging) return;
@@ -107,18 +119,33 @@ export default {
       );
     },
     startTimer() {
-      if (this.timer) return; // Prevent multiple timers
-      this.currentIntervalIndex = 0;
-      this.currentTime = this.intervals[this.currentIntervalIndex].duration;
-      this.updateTimeDisplay();
-      this.timer = setInterval(this.tick, 1000);
+      // if (this.timer) return; // Prevent multiple timers
+      if (this.isRunning) {
+        // Pause timer
+        clearInterval(this.timer);
+        this.isRunning = false;
+      } else {
+        if (!this.timer) {
+          // Start a new timer
+          console.log('Starting a new timer!');
+          this.currentIntervalIndex = 0;
+          this.currentTime = this.intervals[this.currentIntervalIndex].duration;
+          this.updateTimeDisplay();
+          this.timer = setInterval(this.tick, 1000);
+          this.isRunning = true;
+        } else {
+          // Play the existing Timer
+          this.timer = setInterval(this.tick, 1000);
+          this.isRunning = true;
+        }
+      }
     },
     stopTimer() {
+      this.isRunning = false;
       clearInterval(this.timer);
       this.timer = null;
-      document.querySelector(
-        'title',
-      ).textContent = `Study+ | Learn more, easier.`;
+      document.querySelector('title').textContent =
+        `Study+ | Learn more, easier.`;
     },
     tick() {
       if (this.currentTime > 0) {
@@ -146,9 +173,8 @@ export default {
         100;
 
       // update the page title
-      document.querySelector(
-        'title',
-      ).textContent = `${this.timeRemaining} | Study+ | Learn more, easier.`;
+      document.querySelector('title').textContent =
+        `${this.timeRemaining} | Study+ | Learn more, easier.`;
     },
     handleRouteChange(to) {
       // Check if the route contains "dashboard"
@@ -157,7 +183,7 @@ export default {
         this.$refs.pomodoro.style.display = 'none';
       } else {
         // Ensure Pomodoro is visible when on dashboard or minimized
-        this.$refs.pomodoro.style.display = 'block';
+        this.$refs.pomodoro.style.display = 'flex';
       }
     },
   },
@@ -216,12 +242,10 @@ button {
   -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
   box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+  transition: background 0.2s;
 }
 .minimized button {
   font-size: 1rem;
-}
-.green {
-  background: hsla(122, 100%, 50%, 0.4);
 }
 .red {
   background: hsla(4, 90%, 58%, 0.4);

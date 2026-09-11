@@ -2,7 +2,11 @@
   <img :src="backgroundImage" alt="background" id="bg" @load="fadeIn" />
   <div
     class="background_loading"
+<<<<<<< HEAD
     id="bgl"
+=======
+    :class="{ visible: isBgLoaded }"
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     :style="{ background: averageColor }"></div>
   <nav>
     <router-link
@@ -102,7 +106,10 @@
 </template>
 <script>
 import {
+<<<<<<< HEAD
   getAverageColor,
+=======
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
   getUsersBackground,
   setPoints,
   getPoints,
@@ -115,6 +122,10 @@ import {
 import { generate4AnswerQuestion } from '@/assets/js/openai';
 import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
+<<<<<<< HEAD
+=======
+import { getAverageBgColor } from '@/assets/js/cookiesHandler';
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 export default {
   components: {
     AiDisclamer,
@@ -134,6 +145,10 @@ export default {
       playAreaHeight: 20,
       playArea: [],
       isMoving: true,
+<<<<<<< HEAD
+=======
+      isBgLoaded: false,
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
       tetrominoTypes: {
         I: {
           color: 'cyan',
@@ -216,6 +231,18 @@ export default {
     ...mapGetters(['user']),
   },
   async mounted() {
+<<<<<<< HEAD
+=======
+    this.averageColor = await getAverageBgColor();
+    this.isBgLoaded = true;
+    // Wrap all DOM modifications in the guard:
+    const bgl = document.getElementById('bgl');
+    if (bgl) {
+      bgl.style.opacity = 1;
+      bgl.style.transition = 'opacity 0.5s';
+    }
+
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     this.initPlayArea();
     this.tetromino = this.newTetromino();
     this.nextTetromino = this.newTetromino();
@@ -227,7 +254,11 @@ export default {
     await this.createQuestions();
 
     // this.playArea = await getPlayArea(this.user.uid, this.projectId);
+<<<<<<< HEAD
     this.averageColor = await getAverageColor(this.user.uid);
+=======
+    this.averageColor = await getAverageBgColor();
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
     document.getElementById('bgl').style.opacity = 1;
     if (!this.user || !this.user.uid) return;
     try {
@@ -647,6 +678,12 @@ hr {
   opacity: 0;
   transition: opacity 0.5s;
 }
+<<<<<<< HEAD
+=======
+.background_loading.visible {
+  opacity: 1;
+}
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 span {
   text-align: center;
 }
@@ -744,7 +781,13 @@ span {
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
 
+<<<<<<< HEAD
   transition: top 0.125s, left 0.125s;
+=======
+  transition:
+    top 0.125s,
+    left 0.125s;
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
   /* box-shadow: 0.0625rem 0.0625rem 0.25rem var(--tetrominoColor, #ffffff30); */
 }
@@ -753,7 +796,13 @@ span {
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
 
+<<<<<<< HEAD
   transition: top 0.125s, left 0.125s;
+=======
+  transition:
+    top 0.125s,
+    left 0.125s;
+>>>>>>> 36cfc5b (Bug fixes + Added delete for projects)
 
   /* box-shadow: 0.0625rem 0.0625rem 0.25rem var(--tetrominoColor, #ffffff30); */
 }
