@@ -23,6 +23,7 @@ import {
   getDoc,
   setDoc,
   getDocs,
+  deleteDoc,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -431,6 +432,42 @@ export async function getProjectRating(uid, projectId) {
     rating: projectDoc.data().rating,
     improvements: projectDoc.data().improvements,
   };
+}
+
+export async function deleteProject(uid, project) {
+  if (!uid || !project) {
+    console.error('User ID and Project are required to delete a project.');
+    return false;
+  }
+
+  const projectId = typeof project === 'object' ? project.id : project;
+
+  try {
+    const projectDocRef = doc(db, 'projects', uid, 'userProjects', projectId);
+    await deleteDoc(projectDocRef);
+
+    const flashcardsDocRef = doc(
+      db,
+      'userSettings',
+      uid,
+      'projects',
+      projectId,
+    );
+
+    const confirmation = confirm(
+      'Are you sure you want to delete your project?',
+    );
+    if (!confirmation) {
+      return false;
+    } else {
+      await deleteDoc(flashcardsDocRef).catch(() => {});
+
+      return true;
+    }
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    throw error;
+  }
 }
 
 export async function createProjectRating(

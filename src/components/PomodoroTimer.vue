@@ -144,6 +144,8 @@ export default {
       this.isRunning = false;
       clearInterval(this.timer);
       this.timer = null;
+      this.timeRemaining = '25:00';
+      this.percentage = 0;
       document.querySelector('title').textContent =
         `Study+ | Learn more, easier.`;
     },
