@@ -31,7 +31,8 @@
             :to="`/dashboard/${project.id}`">
             <div class="projectLink">
               <span>{{ project.name }}</span>
-              <span class="projectMenu">
+              <!-- Only render the toggle menu for valid Firebase project IDs -->
+              <span class="projectMenu" v-if="project.id && project.id !== 0">
                 <div
                   @click.stop.prevent="toggleMenu(project.id)"
                   class="projectToggle">
@@ -41,7 +42,7 @@
                   </svg>
                 </div>
               </span>
-              <div v-show="menuOpen == project.id" class="editProjectDetails">
+              <div v-show="menuOpen === project.id" class="editProjectDetails">
                 <button @click.stop.prevent="handleDelete(project.id)">
                   Delete
                 </button>
@@ -104,7 +105,7 @@ export default {
     return {
       backgroundImage: null,
       currentProject: { id: 0, name: 'Loading...' },
-      projects: [{ id: 0, name: 'Loading...' }],
+      projects: [],
       averageColor: '#3f1487',
       progress: 0,
       janWodospad: false,
@@ -199,31 +200,32 @@ export default {
       if (!this.user?.uid) return;
 
       try {
-        console.log('User:', this.user, 'UID:', this.user.uid);
-
-        // Fetch profile picture and projects concurrently to speed up loading
         const [userPfp, projectsList] = await Promise.all([
           getUserPfp(this.user.uid),
           getProjectsList(this.user.uid),
         ]);
 
-        // Commit a mutation instead of directly mutating Vuex state
         if (userPfp) {
           this.$store.commit('setUserPhoto', userPfp);
         }
 
-        this.projects = projectsList || [];
+        // Map fallbacks if p.id is missing or undefined
+        this.projects = (projectsList || [])
+          .map((p) => ({
+            ...p,
+            id: p.id || p.docId || p.uid,
+          }))
+          .filter((p) => p.id);
 
-        // Redirect immediately if no projects exist before calculating route details
         if (this.projects.length === 0) {
           this.progress = 0;
           this.$router.push('/dashboard/new/0');
           return;
         }
 
-        // Match route project ID safely
         const foundProject = this.projects.find(
-          (project) => project.id === this.$route.params.projectId,
+          (project) =>
+            String(project.id) === String(this.$route.params.projectId),
         );
 
         if (foundProject) {
@@ -236,8 +238,6 @@ export default {
           this.currentProject = { id: 0, name: 'Project not found' };
           this.progress = 0;
         }
-
-        this.janWodospad = this.user.displayName === 'Jan Wodospad';
       } catch (error) {
         console.error('Error updating user data:', error);
       }
@@ -461,6 +461,7 @@ h1 {
 }
 
 #project-list .project {
+  position: relative;
   height: 2.25rem;
   background: #00000033;
   display: flex;

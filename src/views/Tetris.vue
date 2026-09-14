@@ -25,9 +25,7 @@
           cell ? tetrominoTypes[cell.type].color : '#ffffff30'
         };   
                     --x: ${cellIndex % playAreaWidth}; 
-                    --y: ${Math.floor(cellIndex / playAreaWidth)}; `">
-        <!-- {{ cell ? cell.tetrominoIndex+`-`+cell.blockIndex  : cellIndex }} -->
-      </div>
+                    --y: ${Math.floor(cellIndex / playAreaWidth)}; `"></div>
 
       <div
         id="tetromino"
@@ -75,16 +73,16 @@
       <span id="question">{{ question }}</span>
       <div class="buttonContainer">
         <button :disabled="isMoving" @click="() => handleAnswer(0)">
-          {{ answers[0].a }}
+          {{ answers[0]?.a || 'Loading...' }}
         </button>
         <button :disabled="isMoving" @click="() => handleAnswer(1)">
-          {{ answers[1].a }}
+          {{ answers[1]?.a || 'Loading...' }}
         </button>
         <button :disabled="isMoving" @click="() => handleAnswer(2)">
-          {{ answers[2].a }}
+          {{ answers[2]?.a || 'Loading...' }}
         </button>
         <button :disabled="isMoving" @click="() => handleAnswer(3)">
-          {{ answers[3].a }}
+          {{ answers[3]?.a || 'Loading...' }}
         </button>
       </div>
     </div>
@@ -100,14 +98,13 @@
   </div>
   <AiDisclamer />
 </template>
+
 <script>
 import {
   getUsersBackground,
   setPoints,
   getPoints,
   getProject,
-  getPlayArea,
-  setPlayArea,
   updatePercentage,
   getPercentage,
 } from '@/assets/js/firebase';
@@ -115,12 +112,14 @@ import { generate4AnswerQuestion } from '@/assets/js/openai';
 import AiDisclamer from '@/components/AiDisclamer.vue';
 import { mapGetters } from 'vuex';
 import { getAverageBgColor } from '@/assets/js/cookiesHandler';
+
 export default {
   components: {
     AiDisclamer,
   },
   data() {
     return {
+      backgroundImage: '',
       question: 'Loading...',
       answers: [
         { a: 'Loading...', correct: false },
@@ -135,6 +134,7 @@ export default {
       playArea: [],
       isMoving: true,
       isBgLoaded: false,
+      intervalId: null,
       tetrominoTypes: {
         I: {
           color: 'cyan',
@@ -219,52 +219,33 @@ export default {
   async mounted() {
     this.averageColor = await getAverageBgColor();
     this.isBgLoaded = true;
-    // Wrap all DOM modifications in the guard:
-    const bgl = document.getElementById('bgl');
-    if (bgl) {
-      bgl.style.opacity = 1;
-      bgl.style.transition = 'opacity 0.5s';
-    }
 
     this.initPlayArea();
     this.tetromino = this.newTetromino();
     this.nextTetromino = this.newTetromino();
-    const _points = await getPoints(this.user.uid, this.projectId);
-    if (_points !== null && _points !== undefined && !isNaN(_points)) {
-      this.points = _points;
-    }
 
-    await this.createQuestions();
-
-    // this.playArea = await getPlayArea(this.user.uid, this.projectId);
-    this.averageColor = await getAverageBgColor();
-    document.getElementById('bgl').style.opacity = 1;
-    if (!this.user || !this.user.uid) return;
-    try {
-      const url = await getUsersBackground(this.user.uid);
-      this.backgroundImage = url || defaultBackground;
-      document.getElementById('bg').style.opacity = 1;
-    } catch (error) {
-      console.error('Error fetching background image:', error);
-      this.backgroundImage = defaultBackground;
-    }
+    // Questions are now handled automatically by the 'user' watcher above
 
     window.addEventListener('keydown', this.handleKeydown);
-
-    window.setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.down();
     }, 321);
   },
   beforeUnmount() {
     window.removeEventListener('keydown', this.handleKeydown);
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   },
   methods: {
+    fadeIn() {
+      const bg = document.getElementById('bg');
+      if (bg) bg.style.opacity = 1;
+    },
     async handleAnswer(id) {
-      if (this.answers[id].correct) {
+      if (this.answers[id]?.correct) {
         this.points += 100;
-        setPoints(this.user.uid, this.projectId, this.points).then(() => {
-          console.log('Points set');
-        });
+        await setPoints(this.user.uid, this.projectId, this.points);
         this.isMoving = true;
         this.createQuestions();
         let current = await getPercentage(this.user.uid, this.projectId);
@@ -279,35 +260,44 @@ export default {
       } else {
         this.points -= 50;
         alert('Incorrect');
-        setPoints(this.user.uid, this.projectId, this.points).then(() => {
-          console.log('Points set');
-        });
+        await setPoints(this.user.uid, this.projectId, this.points);
       }
     },
-
     async createQuestions() {
-      const project = await getProject(this.user.uid, this.projectId);
-      console.log(project);
-      const response = await generate4AnswerQuestion(
-        project.fileData || 'No Data',
-        project.documentType || 'unkown',
-        project.title || 'Untitled',
-        project.description || '',
-        `Have this mood: ${
-          project.AI_Theme || 'Be a helpful AI assistant'
-        }, and this is what the user wrote: ${
-          project.extraPrompt || '(no extra prompt)'
-        }`,
-      );
+      // 1. Guard against missing user or projectId before fetching
+      if (!this.user?.uid || !this.projectId) {
+        console.warn('Cannot fetch questions: User or Project ID is missing');
+        return;
+      }
 
-      const question = response.question;
+      try {
+        const project = await getProject(this.user.uid, this.projectId);
 
-      console.log(response);
+        // 2. Ensure project exists and provide fallbacks for all positional arguments
+        if (!project) {
+          console.warn('Project data not found');
+          return;
+        }
 
-      console.log(question);
+        const response = await generate4AnswerQuestion(
+          project.fileData || 'No Data',
+          project.fileType || project.documentType || 'notes', // Ensure correct key match
+          project.title || 'Untitled',
+          project.description || '',
+          `Have this mood: ${
+            project.AI_Theme || 'Be a helpful AI assistant'
+          }, and this is what the user wrote: ${
+            project.extraPrompt || '(no extra prompt)'
+          }`,
+        );
 
-      this.question = question.q;
-      this.answers = question.answers;
+        if (response?.question) {
+          this.question = response.question.q;
+          this.answers = response.question.answers;
+        }
+      } catch (error) {
+        console.error('Failed to generate question:', error);
+      }
     },
     handleKeydown(event) {
       switch (event.key) {
@@ -316,9 +306,7 @@ export default {
           this.down();
           if (!this.isMoving) break;
           this.points += 0.25;
-          setPoints(this.user.uid, this.projectId, this.points).then(() => {
-            console.log('Points set');
-          });
+          setPoints(this.user.uid, this.projectId, this.points);
           break;
         case 'a':
         case 'ArrowLeft':
@@ -513,11 +501,8 @@ export default {
     },
     place() {
       this.points += 10;
-      console.log('t: ' + this.tetromino.type);
-      console.log('n: ' + this.nextTetromino.type);
       for (let block of this.tetromino.blocks) {
         if (block.y < 0) {
-          // alert('Game Over');
           this.restart();
           return;
         }
@@ -538,16 +523,10 @@ export default {
           i++;
         }
       }
-      setPoints(this.user.uid, this.projectId, this.points).then(() => {
-        console.log('Points set');
-      });
-      // setPlayArea(this.user.uid, this.projectId, this.playArea || []).then(
-      //   () => {
-      //     console.log('Play Area set');
-      //   },
-      // );
+      setPoints(this.user.uid, this.projectId, this.points);
     },
     initPlayArea() {
+      this.playArea = [];
       for (let i = 0; i < this.playAreaHeight; i++) {
         this.playArea.push([]);
         for (let j = 0; j < this.playAreaWidth; j++) {
@@ -556,7 +535,7 @@ export default {
       }
     },
     newTetromino() {
-      if (this.generatedTetrominos == 4) {
+      if (this.generatedTetrominos === 4) {
         this.isMoving = false;
         this.generatedTetrominos = 0;
       }
@@ -566,7 +545,8 @@ export default {
       let randomType =
         tetrominoTypes[Math.floor(Math.random() * tetrominoTypes.length)];
       let preparingTetromino = {};
-      preparingTetromino.tetrominoIndex = this.tetromino.tetrominoIndex + 1;
+      preparingTetromino.tetrominoIndex =
+        (this.tetromino?.tetrominoIndex || 0) + 1;
       preparingTetromino.type = randomType;
       preparingTetromino.x = Math.floor(this.playAreaWidth / 2);
       preparingTetromino.y = -4;
@@ -591,94 +571,165 @@ export default {
       this.nextTetromino = this.newTetromino();
     },
   },
+  watch: {
+    user: {
+      immediate: true,
+      async handler(newUser) {
+        if (newUser?.uid && this.projectId) {
+          await this.createQuestions();
+        }
+      },
+    },
+  },
 };
 </script>
 <style scoped>
 nav > a {
   font-family: 'League Spartan', serif;
+
   font-size: 1.3rem;
+
   color: white;
+
   text-decoration: none;
 }
+
 nav {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   padding: 1rem;
+
   background-image: linear-gradient(to bottom, #00000081, #0000);
+
   color: white;
+
   width: 100%;
+
   position: fixed;
+
   height: 6rem;
 }
+
 .buttonContainer {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
+
   gap: 0.5rem;
+
   grid-template-rows: 1fr 1fr;
+
   width: 20rem;
+
   margin-left: 1rem;
 }
+
 .buttonContainer button {
   width: 10rem;
+
   font-size: 1rem;
+
   height: 2.75rem;
 }
+
 .buttonContainer button:disabled {
   background: #ffffff30;
+
   color: #ffffff30;
 }
+
 hr {
   all: unset;
+
   width: 100%;
+
   height: 2px;
+
   background: #fff3;
 }
+
 #bg {
   position: fixed;
+
   top: 0;
+
   left: 0;
+
   z-index: -1;
+
   width: 100%;
+
   height: 100%;
+
   object-fit: cover;
+
   opacity: 0;
+
   transition: opacity 0.5s;
+
   transition-delay: 0.25s;
+
   /* filter: contrast(0.8); */
 }
+
 .background_loading {
   position: fixed;
+
   top: 0;
+
   left: 0;
+
   z-index: -2;
+
   width: 100%;
+
   height: 100%;
+
   opacity: 0;
+
   transition: opacity 0.5s;
 }
+
 .background_loading.visible {
   opacity: 1;
 }
+
 span {
   text-align: center;
 }
+
 #Tetris {
   --cellSize: 2.5rem;
+
   --gapSize: 0.0625rem;
 
   display: grid;
+
   grid-template-columns: auto 10rem;
+
   grid-template-areas: 'tetris nextTetromino' 'tetris controls';
+
   gap: 0.5rem;
+
   justify-content: center;
+
   align-items: center;
+
   margin-inline: auto;
+
   position: absolute;
+
   top: 50%;
+
   left: 50%;
+
   transform: translate(-50%, -50%);
 }
+
 #playArea {
   grid-area: tetris;
 
@@ -687,74 +738,113 @@ span {
   width: calc(
     var(--playAreaWidth) * (var(--cellSize) + var(--gapSize)) + var(--gapSize)
   );
+
   height: calc(
     var(--playAreaHeight) * (var(--cellSize) + var(--gapSize)) + var(--gapSize)
   );
 
   padding: var(--gapSize);
+
   background-color: #ffffff30;
+
   backdrop-filter: blur(10px);
 
   max-width: 80vh;
+
   max-width: 80vh;
 }
+
 .cell,
 .block,
 .nextTetrominoBlock {
   background-color: var(--tetrominoColor, #ffffff30);
-  /* background: radial-gradient(
-      ellipse at top right,
-      color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 10%),
-      transparent
-    ),
-    radial-gradient(
-      ellipse at bottom left,
-      color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 5%),
-      var(--tetrominoColor, #ffffff30) 50%
-    );
 
-  border: 0.125rem solid #222;
-  border-radius: 0.125rem;
-  border-color: color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 4%)
-    color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 1%)
-    color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 4%)
-    color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 1%); */
+  /* background: radial-gradient(
+
+ellipse at top right,
+
+color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 10%),
+
+transparent
+
+),
+
+radial-gradient(
+
+ellipse at bottom left,
+
+color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 5%),
+
+var(--tetrominoColor, #ffffff30) 50%
+
+);
+
+
+
+border: 0.125rem solid #222;
+
+border-radius: 0.125rem;
+
+border-color: color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 4%)
+
+color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 1%)
+
+color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 4%)
+
+color-mix(in srgb, var(--tetrominoColor, #ffffff30), white 1%); */
+
   padding: 0.25rem;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   white-space: nowrap;
 
   aspect-ratio: 1;
 
   width: var(--cellSize);
+
   height: var(--cellSize);
 
   overflow: hidden;
+
   text-overflow: clip;
 }
+
 .cell {
   /* box-shadow: 0.0625rem 0.0625rem 0.25rem var(--tetrominoColor, #ffffff30); */
 
   position: absolute;
+
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
+
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
 
   transition: all 0.125s;
 }
+
 #tetromino {
   position: absolute;
+
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
+
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
+
   transform: rotateZ(calc(var(--r) * 90deg));
+
   transform-origin: calc(var(--cellSize) / 2) calc(var(--cellSize) / 2);
 
   transition: 0.125s;
 }
+
 .block {
   position: absolute;
+
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
+
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
 
   transition:
@@ -763,9 +853,12 @@ span {
 
   /* box-shadow: 0.0625rem 0.0625rem 0.25rem var(--tetrominoColor, #ffffff30); */
 }
+
 .nextTetrominoBlock {
   position: absolute;
+
   top: calc(var(--y) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
+
   left: calc(var(--x) * (var(--cellSize) + var(--gapSize)) + var(--gapSize));
 
   transition:
@@ -774,41 +867,68 @@ span {
 
   /* box-shadow: 0.0625rem 0.0625rem 0.25rem var(--tetrominoColor, #ffffff30); */
 }
+
 #controls {
   grid-area: controls;
+
   display: grid;
+
   grid-template-columns: 1fr 1fr 1fr;
+
   grid-template-areas: 'cc . c' 'l d r';
+
   gap: 0.25rem;
+
   justify-content: center;
 }
+
 button {
   border: none;
+
   background-color: #ffffff30;
+
   color: #fff;
+
   border-radius: 0.25rem;
+
   padding: 0.5rem;
+
   font-size: 1.5rem;
+
   cursor: pointer;
+
   backdrop-filter: blur(10px);
+
   -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+
   -moz-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
+
   box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
 }
+
 #nextTetrominoDiv {
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 0.5rem;
+
   width: 20rem;
+
   /* margin-left: 10rem; */
 }
+
 #nextTetromino {
   position: relative;
+
   padding: 1rem;
+
   margin-bottom: 6rem;
+
   margin-top: 2rem;
 }
 </style>

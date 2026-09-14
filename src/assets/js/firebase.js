@@ -93,7 +93,6 @@ onAuthStateChanged(auth, (user) => {
 export function logOutUser() {
   // remove the users percistance data
   localStorage.removeItem('user');
-  
 }
 
 export function getUserUID() {
@@ -408,9 +407,8 @@ export async function getProject(uid, projectId) {
 
 export async function getProjectsList(uid) {
   const projectsCollectionRef = collection(db, 'projects', uid, 'userProjects');
-  const projectsCollection = await getDocs(projectsCollectionRef); // Use getDocs() instead of `.get()`
+  const projectsCollection = await getDocs(projectsCollectionRef);
 
-  // If no project list exists, return an empty array
   if (projectsCollection.empty) return [];
 
   return projectsCollection.docs.map((doc) => doc.data());
