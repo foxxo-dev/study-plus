@@ -52,6 +52,8 @@ export async function getRatingAndImproving(_doc, _rubric) {
   return response.json();
 }
 
+let questionQueue = [];
+
 export async function generate4AnswerQuestion(
   documentData,
   documentType,
@@ -63,40 +65,40 @@ export async function generate4AnswerQuestion(
     throw new Error('Missing required parameters');
   }
 
-  // fetch the API with all the fields in the body
-  const body = {
-    documentData,
-    documentType,
-    topic,
-    description,
-    extraPrompt,
-  };
+  if (questionQueue.length === 0) {
+    const body = {
+      documentData,
+      documentType,
+      topic,
+      description,
+      extraPrompt,
+    };
 
-  const response = await fetch(apiUri + 'g4aq', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
+    const response = await fetch(apiUri + 'g4aq', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
 
-  // shuffle the items in the array
-  const data = await response.json();
+    const data = await response.json();
 
-  console.log('\n\n\nDirectly generated data!!!!');
-  console.log(data);
-  const array = data.question.answers;
-  const shuffledArray = array.sort(() => Math.random() - 0.5);
-  console.log(shuffledArray);
+    if (!data.questions || data.questions.length === 0) {
+      throw new Error('No questions returned from API');
+    }
 
-  console.log('final data', {
-    question: data.question.q,
-    answers: shuffledArray,
-  });
+    questionQueue = data.questions.map((item) => ({
+      q: item.q,
+      answers: [...item.answers].sort(() => Math.random() - 0.5),
+    }));
+  }
+
+  const currentQuestion = questionQueue.shift();
+
+  console.log('Serving from queue. Remaining:', questionQueue.length);
+
   return {
-    question: {
-      q: data.question.q,
-      answers: shuffledArray,
-    },
+    question: currentQuestion,
   };
 }
