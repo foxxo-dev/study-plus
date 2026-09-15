@@ -83,6 +83,7 @@ export async function generate4AnswerQuestion(
   // shuffle the items in the array
   const data = await response.json();
 
+  console.log('\n\n\nDirectly generated data!!!!');
   console.log(data);
   const array = data.question.answers;
   const shuffledArray = array.sort(() => Math.random() - 0.5);
