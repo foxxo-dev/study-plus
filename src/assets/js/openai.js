@@ -84,6 +84,8 @@ export async function generate4AnswerQuestion(
 
     const data = await response.json();
 
+    console.log(data);
+
     if (!data.questions || data.questions.length === 0) {
       throw new Error('No questions returned from API');
     }
