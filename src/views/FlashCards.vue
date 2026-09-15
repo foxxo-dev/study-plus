@@ -332,6 +332,7 @@ export default {
         return;
       }
       this.flashCardData = [];
+      this.cardFlipped = false; // Reset flip state to show question first
       this.generating = true;
       this.regenerations--;
       await setRegenerations(this.user.uid, this.regenerations);
@@ -344,7 +345,7 @@ export default {
       try {
         flash = await getChatGPTFlashcards(
           project.fileData || 'No Data',
-          project.documentType || 'unkown',
+          project.documentType || 'unknown',
           project.title || 'Untitled',
           project.description || '',
           `Have this mood: ${
@@ -540,12 +541,12 @@ button {
   transition: 0s 0.5s;
 }
 
-.card_front,
-.flipped .card_back {
-  display: none;
-}
 .card_back,
 .flipped .card_front {
+  display: none;
+}
+.card_front,
+.flipped .card_back {
   display: block;
 }
 .card_front {
