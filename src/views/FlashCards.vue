@@ -479,6 +479,7 @@ button {
   align-items: center;
   font-size: 1.5rem;
   padding: 1rem;
+  transform: rotate(180deg);
   text-align: center;
   border-radius: 2rem;
   -webkit-box-shadow: 7px 7px 20px 0px rgba(0, 0, 0, 0.25);
