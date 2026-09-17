@@ -96,7 +96,7 @@ export async function generate4AnswerQuestion(
       q: item.q,
       answers: [...item.answers].sort(() => Math.random() - 0.5),
     }));
-  } elif (questionQueue.length <= 2) {
+  } else if (questionQueue.length == 1) {
     const response = await fetch(apiUri + 'g4aq', {
       method: 'POST',
       headers: {
@@ -113,10 +113,12 @@ export async function generate4AnswerQuestion(
       throw new Error('No questions returned from API');
     }
 
-    questionQueue.push(data.questions.map((item) => ({
-      q: item.q,
-      answers: [...item.answers].sort(() => Math.random() - 0.5),
-    })))
+    questionQueue.push(
+      data.questions.map((item) => ({
+        q: item.q,
+        answers: [...item.answers].sort(() => Math.random() - 0.5),
+      })),
+    );
   }
 
   const currentQuestion = questionQueue.shift();
