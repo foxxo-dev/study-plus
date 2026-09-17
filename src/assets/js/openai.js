@@ -65,15 +65,15 @@ export async function generate4AnswerQuestion(
     throw new Error('Missing required parameters');
   }
 
-  if (questionQueue.length === 0) {
-    const body = {
-      documentData,
-      documentType,
-      topic,
-      description,
-      extraPrompt,
-    };
+  const body = {
+    documentData,
+    documentType,
+    topic,
+    description,
+    extraPrompt,
+  };
 
+  if (questionQueue.length === 0) {
     console.log('Fetching', apiUri, '/', 'g4aq');
 
     const response = await fetch(apiUri + 'g4aq', {
@@ -96,6 +96,27 @@ export async function generate4AnswerQuestion(
       q: item.q,
       answers: [...item.answers].sort(() => Math.random() - 0.5),
     }));
+  } elif (questionQueue.length <= 2) {
+    const response = await fetch(apiUri + 'g4aq', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if (!data.questions || data.questions.length === 0) {
+      throw new Error('No questions returned from API');
+    }
+
+    questionQueue.push(data.questions.map((item) => ({
+      q: item.q,
+      answers: [...item.answers].sort(() => Math.random() - 0.5),
+    })))
   }
 
   const currentQuestion = questionQueue.shift();
