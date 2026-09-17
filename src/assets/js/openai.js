@@ -74,7 +74,7 @@ export async function generate4AnswerQuestion(
       extraPrompt,
     };
 
-    console.log('Fetching', apiUrl, '/', 'g4aq');
+    console.log('Fetching', apiUri, '/', 'g4aq');
 
     const response = await fetch(apiUri + 'g4aq', {
       method: 'POST',
